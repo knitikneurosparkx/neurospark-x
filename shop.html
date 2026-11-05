@@ -199,7 +199,7 @@
       </div>
       <div style="border-top:1px solid var(--border-subtle); padding-top:20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-family:var(--font-mono); font-size:1.1rem;"><span>TOTAL:</span><span id="cart-total-amount" style="color:var(--gold); font-weight:700;">$0</span></div>
-        <button class="btn btn-gold" style="width:100%;" onclick="alert('Proceeding to Checkout...');">PROCEED TO CHECKOUT →</button>
+        <button class="btn btn-gold" style="width:100%;" onclick="window.location.href='checkout.html'">PROCEED TO CHECKOUT →</button>
       </div>
     </div>
   </div>
@@ -324,43 +324,46 @@
       }
 
       grid.innerHTML = prods.map(prod => `
-        <div class="cat-card" style="align-items: stretch; text-align: left; padding: 24px; justify-content: space-between; position: relative;">
-          <!-- WordPress Banner Ribbon -->
-          <div class="product-ribbon ${prod.price === 0 ? 'gold' : ''}">${prod.ribbonText || prod.badge}</div>
-
-          <div>
-            <div style="margin-top: 18px; margin-bottom: 8px;">
-              <span class="section-eyebrow" style="margin: 0; font-size: 0.725rem;">${prod.tag}</span>
-            </div>
-            
-            <h3 style="font-size: 1.3rem; margin-bottom: 10px; line-height: 1.3;">
-              <a href="product.html?id=${prod.id}" style="color: var(--soft-white); transition: color 0.2s;" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--soft-white)'">
-                ${prod.title}
-              </a>
-            </h3>
-            <p style="font-size: 0.875rem; line-height: 1.5; margin-bottom: 20px; color: var(--text-muted);">${prod.summary}</p>
+        <div class="product-card">
+          <!-- Visual Product Mockup Showcase -->
+          <div class="product-card-visual" onclick="window.location.href='product.html?id=${prod.id}'">
+            <div class="product-ribbon ${prod.price === 0 ? 'gold' : ''}">${prod.ribbonText || prod.badge}</div>
+            ${window.NeuroSparkData.getProductVisual ? window.NeuroSparkData.getProductVisual(prod.id) : ''}
+            <div class="product-card-format-badge">${prod.format ? prod.format.split('+')[0].trim() : 'System Module'}</div>
           </div>
 
-          <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <div class="product-card-body">
             <div>
-              <div style="font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700; color: ${prod.price === 0 ? 'var(--teal)' : 'var(--gold)'};">
-                ${prod.price === 0 ? 'FREE' : `$${prod.price}`}
-              </div>
-              ${prod.originalPrice ? `<span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-subtle); text-decoration: line-through;">$${prod.originalPrice}</span>` : ''}
+              <div class="product-card-tag">${prod.tag}</div>
+              <h3 class="product-card-title">
+                <a href="product.html?id=${prod.id}">
+                  ${prod.title}
+                </a>
+              </h3>
+              <p class="product-card-summary">${prod.summary}</p>
             </div>
-            <div style="display: flex; gap: 8px;">
-              <a href="product.html?id=${prod.id}" class="btn btn-glass" style="padding: 8px 14px; font-size: 0.75rem;">
-                VIEW SYSTEM →
-              </a>
-              ${prod.price > 0 ? `
-                <button class="btn btn-gold" onclick="addToCart('${prod.title}', ${prod.price})" style="padding: 8px 12px; font-size: 0.75rem;" title="Add to Cart">
-                  + CART
-                </button>
-              ` : `
-                <button class="btn btn-teal" data-open-lead-magnet style="padding: 8px 12px; font-size: 0.75rem;" title="Claim Lead Magnet">
-                  CLAIM
-                </button>
-              `}
+
+            <div class="product-card-footer">
+              <div>
+                <div style="font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700; color: ${prod.price === 0 ? 'var(--teal)' : 'var(--gold)'};">
+                  ${prod.price === 0 ? 'FREE' : `$${prod.price}`}
+                </div>
+                ${prod.originalPrice ? `<span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-subtle); text-decoration: line-through;">$${prod.originalPrice}</span>` : ''}
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <a href="product.html?id=${prod.id}" class="btn btn-glass" style="padding: 8px 14px; font-size: 0.75rem;">
+                  VIEW SYSTEM →
+                </a>
+                ${prod.price > 0 ? `
+                  <button class="btn btn-gold" onclick="addToCart('${prod.title}', ${prod.price})" style="padding: 8px 12px; font-size: 0.75rem;" title="Add to Cart">
+                    + CART
+                  </button>
+                ` : `
+                  <button class="btn btn-teal" data-open-lead-magnet style="padding: 8px 12px; font-size: 0.75rem;" title="Claim Lead Magnet">
+                    CLAIM
+                  </button>
+                `}
+              </div>
             </div>
           </div>
         </div>

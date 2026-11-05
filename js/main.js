@@ -269,4 +269,48 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // 11. Homepage Featured Products with Visual Mockups
+  const homeProdsEl = document.getElementById('homepage-featured-products');
+  if (homeProdsEl && window.NeuroSparkData && window.NeuroSparkData.products) {
+    const featured = window.NeuroSparkData.products.filter(p => ['prod-1', 'prod-2', 'prod-5'].includes(p.id));
+    homeProdsEl.innerHTML = featured.map(prod => `
+      <div class="product-card">
+        <div class="product-card-visual" onclick="window.location.href='product.html?id=${prod.id}'">
+          <div class="product-ribbon ${prod.price === 0 ? 'gold' : ''}">${prod.ribbonText || prod.badge}</div>
+          ${window.NeuroSparkData.getProductVisual ? window.NeuroSparkData.getProductVisual(prod.id) : ''}
+          <div class="product-card-format-badge">${prod.format ? prod.format.split('+')[0].trim() : 'System Module'}</div>
+        </div>
+
+        <div class="product-card-body">
+          <div>
+            <div class="product-card-tag">${prod.tag}</div>
+            <h3 class="product-card-title">
+              <a href="product.html?id=${prod.id}">
+                ${prod.title}
+              </a>
+            </h3>
+            <p class="product-card-summary">${prod.summary}</p>
+          </div>
+
+          <div class="product-card-footer">
+            <div>
+              <div style="font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700; color: ${prod.price === 0 ? 'var(--teal)' : 'var(--gold)'};">
+                ${prod.price === 0 ? 'FREE' : `$${prod.price}`}
+              </div>
+              ${prod.originalPrice ? `<span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-subtle); text-decoration: line-through;">$${prod.originalPrice}</span>` : ''}
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a href="product.html?id=${prod.id}" class="btn btn-glass" style="padding: 8px 14px; font-size: 0.75rem;">
+                VIEW SYSTEM →
+              </a>
+              <button class="btn btn-gold" onclick="addToCart('${prod.title}', ${prod.price})" style="padding: 8px 12px; font-size: 0.75rem;" title="Add to Cart">
+                + CART
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
 });

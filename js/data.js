@@ -312,5 +312,225 @@ window.NeuroSparkData = {
       date: "September 2026",
       snippet: "Examining why modern work feels so alienating, and how matching personal archetype geometry to digital tooling restores genuine purpose."
     }
-  ]
+  ],
+
+  // Product Visual / 3D Mockup Generator
+  getProductVisual: function (prodId) {
+    switch (prodId) {
+      case 'prod-1':
+        return `
+          <svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="prod-svg-visual">
+            <defs>
+              <linearGradient id="p1-bg" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0F101E"/>
+                <stop offset="1" stop-color="#06060A"/>
+              </linearGradient>
+              <linearGradient id="p1-core" x1="140" y1="60" x2="260" y2="180" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#14B8A6"/>
+                <stop offset="0.5" stop-color="#4F46E5"/>
+                <stop offset="1" stop-color="#7C3AED"/>
+              </linearGradient>
+              <radialGradient id="p1-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#0A0A0F" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#p1-bg)"/>
+            <circle cx="200" cy="120" r="100" fill="url(#p1-glow)"/>
+            <path d="M0 40h400M0 80h400M0 120h400M0 160h400M0 200h400" stroke="#1E1E2E" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <path d="M80 0v240M160 0v240M240 0v240M320 0v240" stroke="#1E1E2E" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <circle cx="200" cy="120" r="48" stroke="#14B8A6" stroke-width="1.5" stroke-dasharray="6 3"/>
+            <circle cx="200" cy="120" r="34" fill="url(#p1-core)"/>
+            <circle cx="200" cy="120" r="16" fill="#0A0A0F" stroke="#F8FAFC" stroke-width="1.5"/>
+            <path d="M195 120l4 4 7-8" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <g stroke="#7C3AED" stroke-width="1.2">
+              <line x1="200" y1="120" x2="130" y2="70"/>
+              <line x1="200" y1="120" x2="270" y2="70"/>
+              <line x1="200" y1="120" x2="130" y2="170"/>
+              <line x1="200" y1="120" x2="270" y2="170"/>
+            </g>
+            <rect x="110" y="55" width="40" height="30" rx="6" fill="#16182B" stroke="#14B8A6" stroke-width="1.2"/>
+            <text x="130" y="74" fill="#14B8A6" font-size="9" font-family="monospace" text-anchor="middle" font-weight="700">CODE</text>
+            <rect x="250" y="55" width="40" height="30" rx="6" fill="#16182B" stroke="#4F46E5" stroke-width="1.2"/>
+            <text x="270" y="74" fill="#818CF8" font-size="9" font-family="monospace" text-anchor="middle" font-weight="700">AUTO</text>
+            <rect x="110" y="155" width="40" height="30" rx="6" fill="#16182B" stroke="#7C3AED" stroke-width="1.2"/>
+            <text x="130" y="174" fill="#C084FC" font-size="9" font-family="monospace" text-anchor="middle" font-weight="700">DATA</text>
+            <rect x="250" y="155" width="40" height="30" rx="6" fill="#16182B" stroke="#D4A017" stroke-width="1.2"/>
+            <text x="270" y="174" fill="#FBBF24" font-size="9" font-family="monospace" text-anchor="middle" font-weight="700">SWARM</text>
+            <rect x="20" y="18" width="124" height="20" rx="4" fill="rgba(20,184,166,0.12)" stroke="#14B8A6" stroke-width="0.8"/>
+            <text x="82" y="32" fill="#2DD4BF" font-size="8.5" font-family="monospace" text-anchor="middle" letter-spacing="1">AGENT_OS // v2.6</text>
+            <text x="380" y="32" fill="#64748B" font-size="8.5" font-family="monospace" text-anchor="end">SYS: ONLINE</text>
+          </svg>
+        `;
+      case 'prod-2':
+        return `
+          <svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="prod-svg-visual">
+            <defs>
+              <linearGradient id="p2-bg" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#12101F"/>
+                <stop offset="1" stop-color="#06060A"/>
+              </linearGradient>
+              <linearGradient id="p2-gold" x1="160" y1="60" x2="240" y2="180" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FDE047"/>
+                <stop offset="0.5" stop-color="#D4A017"/>
+                <stop offset="1" stop-color="#B45309"/>
+              </linearGradient>
+              <radialGradient id="p2-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#D4A017" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#0A0A0F" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#p2-bg)"/>
+            <circle cx="200" cy="120" r="90" fill="url(#p2-glow)"/>
+            <!-- Concentric Golden Validation Rings -->
+            <ellipse cx="200" cy="120" rx="90" ry="38" stroke="rgba(212,160,23,0.3)" stroke-width="1" stroke-dasharray="4 4"/>
+            <ellipse cx="200" cy="120" rx="60" ry="24" stroke="rgba(20,184,166,0.4)" stroke-width="1.2"/>
+            <!-- Isometric Golden Cube Engine -->
+            <polygon points="200,68 245,92 200,116 155,92" fill="#FDE047" fill-opacity="0.9"/>
+            <polygon points="155,92 200,116 200,172 155,148" fill="#D4A017"/>
+            <polygon points="200,116 245,92 245,148 200,172" fill="#B45309"/>
+            <circle cx="200" cy="116" r="6" fill="#F8FAFC" filter="drop-shadow(0 0 6px #FDE047)"/>
+            <!-- Data Flow Pipeline Nodes -->
+            <circle cx="110" cy="120" r="12" fill="#181A2F" stroke="#14B8A6" stroke-width="1.5"/>
+            <text x="110" y="124" fill="#2DD4BF" font-size="11" text-anchor="middle">💡</text>
+            <path d="M125 120h25" stroke="#14B8A6" stroke-width="1.5" stroke-dasharray="2 3"/>
+            <circle cx="290" cy="120" r="12" fill="#181A2F" stroke="#D4A017" stroke-width="1.5"/>
+            <text x="290" y="124" fill="#FBBF24" font-size="11" text-anchor="middle">⚡</text>
+            <path d="M250 120h25" stroke="#D4A017" stroke-width="1.5" stroke-dasharray="2 3"/>
+            <rect x="20" y="18" width="138" height="20" rx="4" fill="rgba(212,160,23,0.12)" stroke="#D4A017" stroke-width="0.8"/>
+            <text x="89" y="32" fill="#FBBF24" font-size="8.5" font-family="monospace" text-anchor="middle" letter-spacing="1">INFINITE_ENGINE // OS</text>
+            <text x="380" y="32" fill="#14B8A6" font-size="8.5" font-family="monospace" text-anchor="end">CLOSED LOOP</text>
+          </svg>
+        `;
+      case 'prod-3':
+        return `
+          <svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="prod-svg-visual">
+            <defs>
+              <linearGradient id="p3-bg" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0E1222"/>
+                <stop offset="1" stop-color="#06060A"/>
+              </linearGradient>
+              <radialGradient id="p3-glow" cx="50%" cy="40%" r="55%">
+                <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#0A0A0F" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#p3-bg)"/>
+            <circle cx="200" cy="110" r="100" fill="url(#p3-glow)"/>
+            <!-- 3D Master Playbook Book Mockup -->
+            <polygon points="150,60 230,45 270,165 190,180" fill="#16182B" stroke="#4F46E5" stroke-width="1.5"/>
+            <polygon points="150,60 142,65 182,185 190,180" fill="#2E335A"/>
+            <polygon points="142,65 182,185 198,188 158,68" fill="#4338CA"/>
+            <!-- Playbook Cover Art -->
+            <path d="M175 90h40M172 105h45M170 120h35" stroke="#14B8A6" stroke-width="1.5"/>
+            <circle cx="190" cy="140" r="10" fill="#7C3AED" stroke="#F8FAFC" stroke-width="1"/>
+            <text x="190" y="143" fill="#F8FAFC" font-size="8" font-family="monospace" text-anchor="middle">X</text>
+            <!-- Badge & Ribbon -->
+            <rect x="20" y="18" width="134" height="20" rx="4" fill="rgba(79,70,229,0.15)" stroke="#6366F1" stroke-width="0.8"/>
+            <text x="87" y="32" fill="#818CF8" font-size="8.5" font-family="monospace" text-anchor="middle" letter-spacing="1">FIELD_PLAYBOOK // 210P</text>
+            <text x="380" y="32" fill="#38BDF8" font-size="8.5" font-family="monospace" text-anchor="end">AUDIO + EPUB</text>
+          </svg>
+        `;
+      case 'prod-4':
+        return `
+          <svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="prod-svg-visual">
+            <defs>
+              <linearGradient id="p4-bg" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#140C24"/>
+                <stop offset="1" stop-color="#06060A"/>
+              </linearGradient>
+              <radialGradient id="p4-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#0A0A0F" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#p4-bg)"/>
+            <circle cx="200" cy="120" r="105" fill="url(#p4-glow)"/>
+            <!-- Celestial SoulMap Astrolabe Dial -->
+            <circle cx="200" cy="120" r="65" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <circle cx="200" cy="120" r="50" stroke="#14B8A6" stroke-width="1"/>
+            <!-- Sacred Geometry Triad -->
+            <polygon points="200,68 245,148 155,148" stroke="#FDE047" stroke-width="1.5" fill="rgba(212,160,23,0.08)"/>
+            <polygon points="200,172 155,92 245,92" stroke="#38BDF8" stroke-width="1" stroke-dasharray="3 3"/>
+            <!-- Celestial Nodes -->
+            <circle cx="200" cy="68" r="6" fill="#FDE047" filter="drop-shadow(0 0 6px #FDE047)"/>
+            <circle cx="245" cy="148" r="6" fill="#7C3AED" filter="drop-shadow(0 0 6px #7C3AED)"/>
+            <circle cx="155" cy="148" r="6" fill="#14B8A6" filter="drop-shadow(0 0 6px #14B8A6)"/>
+            <circle cx="200" cy="120" r="8" fill="#F8FAFC"/>
+            <rect x="20" y="18" width="138" height="20" rx="4" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="0.8"/>
+            <text x="89" y="32" fill="#C084FC" font-size="8.5" font-family="monospace" text-anchor="middle" letter-spacing="1">SOULMAP // PROTOCOL</text>
+            <text x="380" y="32" fill="#34D399" font-size="8.5" font-family="monospace" text-anchor="end">ARCHETYPE ALIGN</text>
+          </svg>
+        `;
+      case 'prod-5':
+        return `
+          <svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="prod-svg-visual">
+            <defs>
+              <linearGradient id="p5-bg" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#1A1408"/>
+                <stop offset="1" stop-color="#06060A"/>
+              </linearGradient>
+              <radialGradient id="p5-glow" cx="50%" cy="50%" r="55%">
+                <stop offset="0%" stop-color="#D4A017" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#0A0A0F" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#p5-bg)"/>
+            <circle cx="200" cy="120" r="105" fill="url(#p5-glow)"/>
+            <!-- 3D Hyper-Vault Gold Obsidian Chest -->
+            <polygon points="200,60 255,90 200,120 145,90" fill="#FDE047" stroke="#D4A017" stroke-width="1.5"/>
+            <polygon points="145,90 200,120 200,180 145,150" fill="#1C180E" stroke="#D4A017" stroke-width="1.2"/>
+            <polygon points="200,120 255,90 255,150 200,180" fill="#2E2413" stroke="#D4A017" stroke-width="1.2"/>
+            <!-- Radiant Constellation Stars -->
+            <circle cx="120" cy="70" r="3" fill="#FDE047"/>
+            <circle cx="280" cy="70" r="3" fill="#14B8A6"/>
+            <circle cx="100" cy="160" r="2.5" fill="#7C3AED"/>
+            <circle cx="300" cy="160" r="2.5" fill="#38BDF8"/>
+            <path d="M120 70L200 60L280 70M145 150L100 160M255 150L300 160" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
+            <circle cx="200" cy="120" r="10" fill="#FDE047" filter="drop-shadow(0 0 10px #FDE047)"/>
+            <text x="200" y="124" fill="#0A0A0F" font-size="10" font-family="monospace" text-anchor="middle" font-weight="900">👑</text>
+            <rect x="20" y="18" width="144" height="20" rx="4" fill="rgba(212,160,23,0.2)" stroke="#D4A017" stroke-width="0.8"/>
+            <text x="92" y="32" fill="#FBBF24" font-size="8.5" font-family="monospace" text-anchor="middle" letter-spacing="1">GENESIS // OMNIVERSE</text>
+            <text x="380" y="32" fill="#FDE047" font-size="8.5" font-family="monospace" text-anchor="end">ALL 14 SYSTEMS</text>
+          </svg>
+        `;
+      case 'prod-6':
+      default:
+        return `
+          <svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="prod-svg-visual">
+            <defs>
+              <linearGradient id="p6-bg" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#081414"/>
+                <stop offset="1" stop-color="#06060A"/>
+              </linearGradient>
+              <radialGradient id="p6-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#0A0A0F" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#p6-bg)"/>
+            <circle cx="200" cy="120" r="95" fill="url(#p6-glow)"/>
+            <!-- Terminal Window Interface -->
+            <rect x="110" y="55" width="180" height="130" rx="8" fill="#0C1518" stroke="#14B8A6" stroke-width="1.5"/>
+            <!-- Terminal Header Bar -->
+            <rect x="110" y="55" width="180" height="22" rx="8" fill="#142629"/>
+            <circle cx="124" cy="66" r="3.5" fill="#EF4444"/>
+            <circle cx="135" cy="66" r="3.5" fill="#F59E0B"/>
+            <circle cx="146" cy="66" r="3.5" fill="#10B981"/>
+            <text x="200" y="70" fill="#64748B" font-size="8" font-family="monospace" text-anchor="middle">bash ~ neurospark-init</text>
+            <!-- Matrix Code Lines -->
+            <text x="125" y="96" fill="#14B8A6" font-size="8.5" font-family="monospace">> DECODE SYSTEM... [OK]</text>
+            <text x="125" y="112" fill="#5EEAD4" font-size="8.5" font-family="monospace">> 20 PROMPTS LOADED</text>
+            <text x="125" y="128" fill="#64748B" font-size="8.5" font-family="monospace">> NOTION WORKSPACE: UNLOCKED</text>
+            <text x="125" y="148" fill="#FDE047" font-size="8.5" font-family="monospace">> CLAIM STATUS: 100% FREE</text>
+            <!-- Unlocked Cyber Padlock -->
+            <circle cx="200" cy="168" r="8" fill="#14B8A6"/>
+            <text x="200" y="172" fill="#0A0A0F" font-size="9" text-anchor="middle">🔓</text>
+            <rect x="20" y="18" width="128" height="20" rx="4" fill="rgba(20,184,166,0.15)" stroke="#14B8A6" stroke-width="0.8"/>
+            <text x="84" y="32" fill="#2DD4BF" font-size="8.5" font-family="monospace" text-anchor="middle" letter-spacing="1">FREE // LEAD MAGNET</text>
+            <text x="380" y="32" fill="#2DD4BF" font-size="8.5" font-family="monospace" text-anchor="end">INSTANT TG ACCESS</text>
+          </svg>
+        `;
+    }
+  }
 };

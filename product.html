@@ -201,14 +201,17 @@
           </div>
 
           <!-- Action & Quantity Row -->
-          <div class="product-actions-row">
+          <div class="product-actions-row" style="display: flex; gap: 12px; flex-wrap: wrap;">
             <div class="quantity-picker">
               <button class="qty-btn" onclick="updateQty(-1)">−</button>
               <span class="qty-val" id="qty-val">1</span>
               <button class="qty-btn" onclick="updateQty(1)">+</button>
             </div>
-            <button class="btn btn-gold btn-add-cart" id="btn-main-action" onclick="handleBuyAction()">
-              ADD TO SYSTEM LIBRARY →
+            <button class="btn btn-gold btn-add-cart" id="btn-main-action" onclick="handleBuyAction(false)">
+              + ADD TO SYSTEM LIBRARY
+            </button>
+            <button class="btn btn-indigo" id="btn-buy-now" onclick="handleBuyAction(true)" style="padding: 14px 22px; font-weight: 700;">
+              ⚡ BUY NOW & CHECKOUT →
             </button>
           </div>
 
@@ -357,7 +360,7 @@
       </div>
       <div style="border-top:1px solid var(--border-subtle); padding-top:20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-family:var(--font-mono); font-size:1.1rem;"><span>TOTAL:</span><span id="cart-total-amount" style="color:var(--gold); font-weight:700;">$0</span></div>
-        <button class="btn btn-gold" style="width:100%;" onclick="alert('Proceeding to Checkout...');">PROCEED TO CHECKOUT →</button>
+        <button class="btn btn-gold" style="width:100%;" onclick="window.location.href='checkout.html'">PROCEED TO CHECKOUT →</button>
       </div>
     </div>
   </div>
@@ -488,19 +491,22 @@
 
       updatePriceDisplay();
 
-      // Banner Visual Symbols based on category
-      const symbols = { 'ai-tools': '⚡', 'systems': '☍', 'learn': '📖', 'growth': '✦', 'bundles': '📦', 'free': '🎁' };
-      document.getElementById('banner-symbol').innerText = symbols[currentProd.category] || '⚡';
-      document.getElementById('banner-title-preview').innerText = currentProd.title;
+      // Banner Visual Mockup Rendering
+      const bannerEl = document.getElementById('main-product-banner');
+      if (bannerEl && window.NeuroSparkData.getProductVisual) {
+        bannerEl.innerHTML = window.NeuroSparkData.getProductVisual(currentProd.id);
+      }
 
       // Button Text
       const btnAction = document.getElementById('btn-main-action');
       if (currentProd.price === 0) {
         btnAction.innerText = 'CLAIM FREE LEAD MAGNET →';
         btnAction.className = 'btn btn-teal btn-add-cart';
+        document.getElementById('btn-buy-now').style.display = 'none';
       } else {
-        btnAction.innerText = 'ADD TO SYSTEM LIBRARY →';
+        btnAction.innerText = '+ ADD TO SYSTEM LIBRARY';
         btnAction.className = 'btn btn-gold btn-add-cart';
+        document.getElementById('btn-buy-now').style.display = 'inline-flex';
       }
 
       // Tab Content
@@ -535,16 +541,21 @@
       const relGrid = document.getElementById('related-products-grid');
       const related = window.NeuroSparkData.products.filter(p => p.id !== currentProd.id).slice(0, 3);
       relGrid.innerHTML = related.map(rp => `
-        <div class="cat-card" style="text-align:left; align-items:stretch; padding:24px; position:relative; justify-content:space-between;">
-          <div class="product-ribbon ${rp.price === 0 ? 'gold' : ''}">${rp.ribbonText || rp.badge}</div>
-          <div style="margin-top:16px;">
-            <span class="section-eyebrow" style="font-size:0.7rem;">${rp.tag}</span>
-            <h4 style="font-size:1.15rem; margin-bottom:8px;"><a href="product.html?id=${rp.id}" style="color:var(--soft-white);">${rp.title}</a></h4>
-            <p style="font-size:0.85rem; line-height:1.4; color:var(--text-muted); margin-bottom:16px;">${rp.summary}</p>
+        <div class="product-card">
+          <div class="product-card-visual" onclick="window.location.href='product.html?id=${rp.id}'" style="height:170px;">
+            <div class="product-ribbon ${rp.price === 0 ? 'gold' : ''}">${rp.ribbonText || rp.badge}</div>
+            ${window.NeuroSparkData.getProductVisual ? window.NeuroSparkData.getProductVisual(rp.id) : ''}
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:14px;">
-            <span style="font-family:var(--font-mono); font-size:1.2rem; font-weight:700; color:${rp.price === 0 ? 'var(--teal)' : 'var(--gold)'};">${rp.price === 0 ? 'FREE' : '$' + rp.price}</span>
-            <a href="product.html?id=${rp.id}" class="btn btn-glass" style="padding:6px 14px; font-size:0.75rem;">VIEW SYSTEM →</a>
+          <div class="product-card-body">
+            <div>
+              <div class="product-card-tag">${rp.tag}</div>
+              <h4 style="font-size:1.15rem; margin-bottom:8px;"><a href="product.html?id=${rp.id}" style="color:var(--soft-white);">${rp.title}</a></h4>
+              <p style="font-size:0.85rem; line-height:1.4; color:var(--text-muted); margin-bottom:16px;">${rp.summary}</p>
+            </div>
+            <div class="product-card-footer">
+              <span style="font-family:var(--font-mono); font-size:1.2rem; font-weight:700; color:${rp.price === 0 ? 'var(--teal)' : 'var(--gold)'};">${rp.price === 0 ? 'FREE' : '$' + rp.price}</span>
+              <a href="product.html?id=${rp.id}" class="btn btn-glass" style="padding:6px 14px; font-size:0.75rem;">VIEW SYSTEM →</a>
+            </div>
           </div>
         </div>
       `).join('');
@@ -601,12 +612,15 @@
       document.getElementById(tabId)?.classList.add('active');
     }
 
-    function handleBuyAction() {
+    function handleBuyAction(directCheckout) {
       if (currentProd.price === 0) {
         document.getElementById('lead-magnet-modal')?.classList.add('active');
       } else {
         const finalPrice = currentProd.price * selectedTierMultiplier * selectedQuantity;
         addToCart(`${currentProd.title} (x${selectedQuantity})`, finalPrice);
+        if (directCheckout) {
+          window.location.href = 'checkout.html';
+        }
       }
     }
 
