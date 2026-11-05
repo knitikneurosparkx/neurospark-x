@@ -33,6 +33,13 @@ const server = http.createServer((req, res) => {
     return res.end('403 Forbidden');
   }
 
+  // Handle directory requests (e.g. /shop/ -> /shop/index.html)
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+    filePath = path.join(filePath, 'index.html');
+  } else if (!fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
+    filePath = filePath + '.html';
+  }
+
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
       // Serve custom 404 page if it exists

@@ -13,10 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. Intelligent Page Link Handling
+  // Clean URL Bar Normalizer (Removes .html extension instantly from URL bar if present)
+  if (window.location.pathname.endsWith('.html')) {
+    let clean = window.location.pathname.replace(/\.html$/, '/');
+    if (clean === '/index/' || clean === 'index/') clean = '/';
+    window.history.replaceState(null, '', clean + window.location.search + window.location.hash);
+  }
+
+  // 2. Intelligent Clean Page Link Handling
   // Ensures clicking a nav link to the current page smoothly scrolls to top or section,
   // preventing the "not opening the 2nd time" browser behavior.
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  const currentCleanPath = window.location.pathname.replace(/\/+$/, '') || '/';
 
   document.querySelectorAll('a[href]').forEach((link) => {
     link.addEventListener('click', (e) => {
@@ -24,9 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!href || href.startsWith('http') || href.startsWith('javascript')) return;
 
       const [targetPage, targetHash] = href.split('#');
+      const targetCleanPath = (targetPage || '').replace(/\/+$/, '') || '/';
 
       // If clicking the current page without a hash
-      if ((targetPage === currentPath || (targetPage === '' && !targetHash)) && !targetHash) {
+      if ((targetCleanPath === currentCleanPath || (targetPage === '' && !targetHash)) && !targetHash) {
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.querySelector('.mobile-menu-drawer')?.classList.remove('active');
@@ -34,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // If clicking an anchor on the current page
-      if (targetHash && (targetPage === currentPath || targetPage === '')) {
+      if (targetHash && (targetCleanPath === currentCleanPath || targetPage === '')) {
         const targetEl = document.getElementById(targetHash);
         if (targetEl) {
           e.preventDefault();
