@@ -698,6 +698,26 @@ window.NeuroSparkData = {
   // Database Interface
   window.NeuroSparkDB = {
     // PRODUCTS CRUD
+    loadLiveProducts: async function () {
+      try {
+        const res = await fetch('/data/products.json?v=' + Date.now());
+        if (res.ok) {
+          const remoteProds = await res.json();
+          if (Array.isArray(remoteProds) && remoteProds.length > 0) {
+            setStorage(STORAGE_KEYS.PRODUCTS, remoteProds);
+            if (window.NeuroSparkData) window.NeuroSparkData.products = remoteProds;
+            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('nsx_data_updated', { detail: { key: STORAGE_KEYS.PRODUCTS, val: remoteProds } }));
+            }
+            return remoteProds;
+          }
+        }
+      } catch (e) {
+        console.warn('Live products network fetch:', e);
+      }
+      return this.getProducts();
+    },
+
     getProducts: function () {
       let stored = getStorage(STORAGE_KEYS.PRODUCTS, null);
       if (!stored || !Array.isArray(stored) || stored.length === 0) {
@@ -757,8 +777,13 @@ window.NeuroSparkData = {
       let users = getStorage(STORAGE_KEYS.USERS, null);
       if (!users || !Array.isArray(users) || users.length === 0) {
         users = [...DEFAULT_USERS];
-        setStorage(STORAGE_KEYS.USERS, users);
       }
+      // Purge any legacy demo users from storage
+      users = users.filter(u => u.email !== 'customer@neurosparkx.com' && u.email !== 'member@neurosparkx.com' && u.email !== 'user@neurosparkx.com');
+      if (!users.some(u => u.role === 'admin')) {
+        users.unshift(DEFAULT_USERS[0]);
+      }
+      setStorage(STORAGE_KEYS.USERS, users);
       return users;
     },
 
@@ -818,10 +843,12 @@ window.NeuroSparkData = {
     // ORDERS CRUD
     getOrders: function () {
       let orders = getStorage(STORAGE_KEYS.ORDERS, null);
-      if (!orders || !Array.isArray(orders) || orders.length === 0) {
-        orders = [...DEFAULT_ORDERS];
-        setStorage(STORAGE_KEYS.ORDERS, orders);
+      if (!orders || !Array.isArray(orders)) {
+        orders = [];
       }
+      // Purge any legacy demo orders from storage
+      orders = orders.filter(o => !o.id.includes('94821') && !o.id.includes('81932') && !o.id.includes('72814'));
+      setStorage(STORAGE_KEYS.ORDERS, orders);
       return orders;
     },
 
@@ -1003,6 +1030,9 @@ window.NeuroSparkData = {
   // Sync window.NeuroSparkData.products with Database
   if (window.NeuroSparkData) {
     window.NeuroSparkData.products = window.NeuroSparkDB.getProducts();
+    if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+      window.NeuroSparkDB.loadLiveProducts();
+    }
   }
 
   // Multi-tab storage sync

@@ -284,11 +284,11 @@
       <form id="admin-login-form" onsubmit="handleAdminAuth(event)">
         <div class="form-group" style="text-align: left;">
           <label for="admin-email">Administrator Email</label>
-          <input type="email" id="admin-email" class="form-control" value="admin@neurosparkx.com" required placeholder="admin@neurosparkx.com">
+          <input type="email" id="admin-email" class="form-control" required placeholder="admin@neurosparkx.com">
         </div>
         <div class="form-group" style="text-align: left;">
           <label for="admin-password">Security Passcode / Password</label>
-          <input type="password" id="admin-password" class="form-control" value="admin123" required placeholder="••••••••">
+          <input type="password" id="admin-password" class="form-control" required placeholder="••••••••">
         </div>
 
         <div id="admin-gate-error" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #FCA5A5; padding: 10px 14px; border-radius: 6px; font-size: 0.825rem; margin-bottom: 18px; text-align: left;">
@@ -1151,14 +1151,92 @@
 
       const reader = new FileReader();
       reader.onload = (event) => {
-        const dataUrl = event.target.result;
-        document.getElementById('form-prod-image').value = dataUrl;
-        updateImagePreview(dataUrl);
+        const img = new Image();
+        img.onload = () => {
+          // Resize to max 800px width/height to avoid storage quota overflow
+          const maxDim = 800;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressed = canvas.toDataURL('image/jpeg', 0.82);
+          document.getElementById('form-prod-image').value = compressed;
+          updateImagePreview(compressed);
+        };
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    function handleProductFormSubmit(e) {
+    
+    // Automated GitHub Repository Publishing Engine
+    async function syncProductsToGitHub(productsList) {
+      const repoName = 'knitikneurosparkx/neurospark-x';
+      const filePath = 'data/products.json';
+      const token = localStorage.getItem('nsx_gh_token') || '';
+      if (!token) {
+        console.log('GitHub direct publishing token not set in browser settings.');
+        return false;
+      }
+      const apiUrl = 'https://api.github.com/repos/' + repoName + '/contents/' + filePath;
+
+      try {
+        let sha = null;
+        const checkRes = await fetch(apiUrl, {
+          headers: {
+            'Authorization': 'token ' + token,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (checkRes.ok) {
+          const info = await checkRes.json();
+          sha = info.sha;
+        }
+
+        const jsonStr = JSON.stringify(productsList, null, 2);
+        const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'token ' + token,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Catalog update via Admin Console [skip ci]',
+            content: b64,
+            sha: sha || undefined,
+            branch: 'main'
+          })
+        });
+
+        if (putRes.ok) {
+          console.log('GitHub repository sync succeeded!');
+          return true;
+        } else {
+          console.warn('GitHub sync notice:', await putRes.text());
+          return false;
+        }
+      } catch (err) {
+        console.warn('GitHub API sync error:', err);
+        return false;
+      }
+    }
+
+    async function handleProductFormSubmit(e) {
       e.preventDefault();
       const id = document.getElementById('form-prod-id').value;
       const categoryVal = document.getElementById('form-prod-category').value;
@@ -1202,13 +1280,15 @@
       window.NeuroSparkDB.saveProduct(prodData);
       closeProductModal();
       refreshAllAdminPanels();
-      alert('Product saved and published directly to live website!');
+      alert('Product saved! Publishing live to neurosparkx.com...');
+      syncProductsToGitHub(window.NeuroSparkDB.getProducts());
     }
 
     function handleDeleteProduct(prodId, title) {
       if (confirm(`Are you sure you want to delete "${title}" from the catalog?`)) {
         window.NeuroSparkDB.deleteProduct(prodId);
         refreshAllAdminPanels();
+        syncProductsToGitHub(window.NeuroSparkDB.getProducts());
       }
     }
 

@@ -620,6 +620,16 @@
       }
     }
 
+    if (window.NeuroSparkDB && typeof window.NeuroSparkDB.loadLiveProducts === 'function') {
+      window.NeuroSparkDB.loadLiveProducts().then(() => {
+        const updated = window.NeuroSparkDB.getProductById(prodId);
+        if (updated) {
+          currentProd = updated;
+          renderProductPage();
+        }
+      });
+    }
+
     renderProductPage();
   </script>
 </body>

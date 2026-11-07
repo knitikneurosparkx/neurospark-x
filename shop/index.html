@@ -322,20 +322,20 @@
         <div class="product-card">
           <!-- Visual Product Mockup Showcase -->
           <div class="product-card-visual" onclick="window.location.href='/product/?id=${prod.id}'">
-            <div class="product-ribbon ${prod.price === 0 ? 'gold' : ''}">${prod.ribbonText || prod.badge}</div>
+            <div class="product-ribbon ${prod.price === 0 ? 'gold' : ''}">${prod.ribbonText || prod.badge || (prod.price === 0 ? 'FREE CLAIM' : 'SYSTEM')}</div>
             ${window.NeuroSparkData.getProductVisual ? window.NeuroSparkData.getProductVisual(prod.id) : ''}
             <div class="product-card-format-badge">${prod.format ? prod.format.split('+')[0].trim() : 'System Module'}</div>
           </div>
 
           <div class="product-card-body">
             <div>
-              <div class="product-card-tag">${prod.tag}</div>
+              <div class="product-card-tag">${prod.tag || prod.categoryName || 'System Architecture'}</div>
               <h3 class="product-card-title">
                 <a href="/product/?id=${prod.id}">
                   ${prod.title}
                 </a>
               </h3>
-              <p class="product-card-summary">${prod.summary}</p>
+              <p class="product-card-summary">${prod.summary || 'High-performance intelligence framework and operating architecture.'}</p>
             </div>
 
             <div class="product-card-footer">
@@ -350,7 +350,7 @@
                   VIEW SYSTEM →
                 </a>
                 ${prod.price > 0 ? `
-                  <button class="btn btn-gold" onclick="addToCart('${prod.title}', ${prod.price})" style="padding: 8px 12px; font-size: 0.75rem;" title="Add to Cart">
+                  <button class="btn btn-gold" onclick="addToCart('${(prod.title || '').replace(/'/g, &quot;\\'&quot;)}', ${prod.price})" style="padding: 8px 12px; font-size: 0.75rem;" title="Add to Cart">
                     + CART
                   </button>
                 ` : `

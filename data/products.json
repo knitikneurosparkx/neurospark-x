@@ -1,0 +1,242 @@
+[
+  {
+    "id": "prod-1",
+    "sku": "NSX-AI-001",
+    "title": "NeuroSpark AI Intelligence Agent OS",
+    "category": "ai-tools",
+    "categoryName": "AI & Tools",
+    "badge": "Best Seller",
+    "ribbonText": "POPULAR",
+    "price": 149,
+    "originalPrice": 249,
+    "tag": "AI Workflow",
+    "format": "Notion Workspace + n8n JSON + Prompt System",
+    "bannerImage": "assets/ref/HomePage_ref.png",
+    "summary": "Multi-agent autonomous framework designed to automate research, writing, code generation, and product deployment.",
+    "problemSolved": "Eliminates tool fragmentation, repetitive prompting friction, and manual task juggling across multiple AI platforms.",
+    "whatItIs": "An end-to-end multi-agent orchestration architecture compatible with Claude, Gemini, and GPT-4. Enables seamless agent delegation across writing, strategic planning, and automated technical operations.",
+    "whoItsFor": "Creators, solo developers, agency operators, and intelligence researchers looking to run autonomous digital operations.",
+    "whatYouGet": [
+      "12 Pre-configured Agent Prompts & System Instructions",
+      "Notion & Obsidian Command Center Database",
+      "Webhooks & Automation Connectors (Make / n8n)",
+      "Lifetime Updates to Model Architecture",
+      "Direct Access to Telegram VIP Signal Room"
+    ],
+    "howItWorks": "Import the templates into your AI platform, link your API keys or web interfaces, and execute tasks via single terminal or command center clicks.",
+    "faqs": [
+      {
+        "q": "What tools do I need to run this?",
+        "a": "A free or paid Notion account, and access to any major LLM (Claude, ChatGPT, or Gemini). Webhook connectors are optional."
+      },
+      {
+        "q": "How are updates delivered?",
+        "a": "Updates are pushed automatically to your personal library and announced in the Telegram channel."
+      },
+      {
+        "q": "Is commercial usage allowed?",
+        "a": "Yes, you can use the agents for personal operations and client project execution."
+      }
+    ],
+    "relatedIds": [
+      "prod-2",
+      "prod-5",
+      "prod-6"
+    ]
+  },
+  {
+    "id": "prod-2",
+    "sku": "NSX-SYS-002",
+    "title": "The Infinite Idea Engine & System Architecture",
+    "category": "systems",
+    "categoryName": "Systems",
+    "badge": "Core System",
+    "ribbonText": "FEATURED",
+    "price": 99,
+    "originalPrice": 149,
+    "tag": "Business System",
+    "format": "Notion OS + Validation Matrix",
+    "summary": "A closed-loop system for generating, validating, and structuring high-leverage digital products and SaaS concepts.",
+    "problemSolved": "Solves shiny-object syndrome, idea graveyard syndrome, and premature building before validation.",
+    "whatItIs": "A systematized knowledge management and ideation engine based on second-brain principles and astrological cycle tracking.",
+    "whoItsFor": "Entrepreneurs and makers who suffer from shiny-object syndrome and want to finish what they start.",
+    "whatYouGet": [
+      "Complete Idea-to-Validation Matrix",
+      "Market Signal Analyzer Spreadsheet",
+      "Friction-Elimination Operating Rituals",
+      "Video Walkthrough & Implementation Guide"
+    ],
+    "howItWorks": "Follow the 4-phase cyclical protocol to capture signals, filter through archetypes, and convert into structured roadmaps.",
+    "faqs": [
+      {
+        "q": "Can this be used by solo founders?",
+        "a": "Yes, it was specifically engineered for solo operators seeking high leverage."
+      },
+      {
+        "q": "Does this require technical coding skills?",
+        "a": "No, all frameworks are template-driven inside Notion and standard spreadsheets."
+      }
+    ],
+    "relatedIds": [
+      "prod-1",
+      "prod-3",
+      "prod-5"
+    ]
+  },
+  {
+    "id": "prod-3",
+    "sku": "NSX-LRN-003",
+    "title": "Decoding The System: The Master Playbook",
+    "category": "learn",
+    "categoryName": "Learn",
+    "badge": "Essential",
+    "ribbonText": "FLAGSHIP",
+    "price": 59,
+    "originalPrice": 89,
+    "tag": "Playbook",
+    "format": "Interactive PDF + EPUB + Audio Edition",
+    "summary": "The definitive guide to understanding hidden structural forces in technology, economics, and human behavior.",
+    "problemSolved": "Overcomes cognitive overwhelm, algorithmic capture, and unconscious behavioral conditioning.",
+    "whatItIs": "A 210-page dense, beautifully designed cosmic manifesto and tactical playbook dissecting systemic leverage.",
+    "whoItsFor": "Anyone seeking clarity in an era of noise, algorithmic capture, and technological upheaval.",
+    "whatYouGet": [
+      "Interactive PDF with hyperlinked references",
+      "EPUB & Audiobook Edition narrated by the founders",
+      "Printable Field Study Worksheets",
+      "Private Community Discussion Channel Access"
+    ],
+    "howItWorks": "Read chapter by chapter while completing the diagnostic prompts at each stage to map your current life matrix.",
+    "faqs": [
+      {
+        "q": "Is this book physical or digital?",
+        "a": "Instant digital access (PDF, EPUB, and lossless audio)."
+      },
+      {
+        "q": "How long does it take to complete?",
+        "a": "Most operators complete the core diagnostic in 3 days."
+      }
+    ],
+    "relatedIds": [
+      "prod-4",
+      "prod-1",
+      "prod-6"
+    ]
+  },
+  {
+    "id": "prod-4",
+    "sku": "NSX-GRO-004",
+    "title": "SoulMap™ Core Alignment Protocol",
+    "category": "growth",
+    "categoryName": "Growth",
+    "badge": "Signature",
+    "ribbonText": "POPULAR",
+    "price": 89,
+    "originalPrice": 129,
+    "tag": "Self-Mastery",
+    "format": "Interactive Diagnostic App + Guidebook",
+    "summary": "Connect your astrological birth matrix with modern cognitive psychology to operate in complete energetic alignment.",
+    "problemSolved": "Eliminates burnout caused by forcing unnatural work habits that conflict with your core psychological wiring.",
+    "whatItIs": "A hybrid framework merging natal chart geometry with Myers-Briggs/Enneagram patterns into a coherent operating manual.",
+    "whoItsFor": "High-performers who feel friction, burnout, or misaligned with traditional hustle-culture advice.",
+    "whatYouGet": [
+      "Personal Archetype Decoding Diagnostic",
+      "Biorhythm & Astrological Timing Calendar",
+      "Shadow Integration Guided Audio Sessions",
+      "Quarterly Alignment Re-calibration Framework"
+    ],
+    "howItWorks": "Input your natal data into the SoulMap calculator, identify your dominant celestial triad, and align your workflow rituals.",
+    "faqs": [
+      {
+        "q": "Do I need prior astrology knowledge?",
+        "a": "None at all. The protocol translates cosmic symbols into modern cognitive systems."
+      },
+      {
+        "q": "Is this based on sun signs alone?",
+        "a": "No, it maps complete natal triads: ascendant, moon, and planetary rulership."
+      }
+    ],
+    "relatedIds": [
+      "prod-3",
+      "prod-1",
+      "prod-6"
+    ]
+  },
+  {
+    "id": "prod-5",
+    "sku": "NSX-BUN-005",
+    "title": "Genesis Omniverse: The Complete NeuroSpark Suite",
+    "category": "bundles",
+    "categoryName": "Bundles",
+    "badge": "Ultimate Pass",
+    "ribbonText": "50% OFF",
+    "price": 299,
+    "originalPrice": 596,
+    "tag": "All-In-One",
+    "format": "Complete Vault Pass (All Current & Future Assets)",
+    "summary": "Everything we've built: AI Agent OS, Infinite Idea Engine, SoulMap Protocol, and all upcoming 2026 digital drops.",
+    "problemSolved": "Gives you the complete end-to-end stack in one purchase at 50% savings, without buying individual items.",
+    "whatItIs": "The complete all-access vault encompassing all tools, courses, frameworks, software templates, and VIP community channels.",
+    "whoItsFor": "Committed builders ready to overhaul their entire digital operating ecosystem and achieve sovereign leverage.",
+    "whatYouGet": [
+      "Access to all 14 Current & Future NeuroSpark Products",
+      "VIP Discord & Private Telegram Mastermind",
+      "Monthly Live Decode & Office Hours with Founders",
+      "Commercial License to Deploy Systems for Clients"
+    ],
+    "howItWorks": "One-click enrollment gives instant library unlocks and invites you into the private Telegram signal room.",
+    "faqs": [
+      {
+        "q": "Are future 2026 products included?",
+        "a": "Yes, every future release is automatically credited to your library."
+      },
+      {
+        "q": "Can my team share this pass?",
+        "a": "The Genesis pass includes 3 operator seats."
+      }
+    ],
+    "relatedIds": [
+      "prod-1",
+      "prod-2",
+      "prod-4"
+    ]
+  },
+  {
+    "id": "prod-6",
+    "sku": "NSX-FRE-006",
+    "title": "The 2026 AI Starter Operating System",
+    "category": "free",
+    "categoryName": "Free",
+    "badge": "Free Signal",
+    "ribbonText": "FREE MAGNET",
+    "price": 0,
+    "originalPrice": 97,
+    "tag": "Lead Magnet",
+    "format": "Instant Telegram / WhatsApp Delivery",
+    "summary": "Our foundational AI prompt architecture and daily operating workflow. 100% free with instant Telegram or WhatsApp unlock.",
+    "problemSolved": "Removes hesitation and gives immediate tangible system leverage at zero monetary cost.",
+    "whatItIs": "A zero-fluff starter pack containing our top 20 production-tested prompts and system instructions.",
+    "whoItsFor": "Anyone wanting an immediate taste of the NeuroSpark X standard before investing in the full ecosystem.",
+    "whatYouGet": [
+      "Direct Telegram & WhatsApp Delivery",
+      "Instant Downloadable Markdown & Notion Template",
+      "Quickstart Video (14 Minutes)",
+      "Weekly Signal Digest Subscription"
+    ],
+    "howItWorks": "Click Claim Free Lead Magnet, join our official Telegram channel or WhatsApp community, and the automated bot delivers it instantly.",
+    "faqs": [
+      {
+        "q": "Is it really 100% free?",
+        "a": "Yes, zero credit card required. Delivered straight to your messaging app."
+      },
+      {
+        "q": "Can I upgrade later?",
+        "a": "Yes, all systems connect modularly."
+      }
+    ],
+    "relatedIds": [
+      "prod-1",
+      "prod-3",
+      "prod-4"
+    ]
+  }
+]

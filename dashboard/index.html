@@ -281,11 +281,11 @@
       <form id="dashboard-signin-form" onsubmit="handleDashboardLogin(event)">
         <div style="text-align: left; margin-bottom: 16px;">
           <label style="display: block; font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 6px;">EMAIL IDENTIFIER</label>
-          <input type="email" id="dash-login-email" class="form-control" style="width:100%; padding:12px; background:#090A10; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#F8FAFC;" placeholder="customer@neurosparkx.com" required value="customer@neurosparkx.com">
+          <input type="email" id="dash-login-email" class="form-control" style="width:100%; padding:12px; background:#090A10; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#F8FAFC;" required placeholder="your-email@domain.com">
         </div>
         <div style="text-align: left; margin-bottom: 16px;">
           <label style="display: block; font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 6px;">PASSCODE / PASSWORD</label>
-          <input type="password" id="dash-login-pass" class="form-control" style="width:100%; padding:12px; background:#090A10; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#F8FAFC;" placeholder="••••••••" required value="customer123">
+          <input type="password" id="dash-login-pass" class="form-control" style="width:100%; padding:12px; background:#090A10; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#F8FAFC;" required placeholder="••••••••">
         </div>
 
         <div id="dash-login-error" style="display:none; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#FCA5A5; padding:8px 12px; border-radius:6px; font-size:0.8rem; margin-bottom:14px; text-align:left;"></div>
@@ -307,7 +307,7 @@
         </div>
         <div style="text-align: left; margin-bottom: 14px;">
           <label style="display: block; font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 6px;">CHOOSE PASSCODE</label>
-          <input type="password" id="dash-reg-pass" class="form-control" style="width:100%; padding:12px; background:#090A10; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#F8FAFC;" placeholder="••••••••" required value="user123">
+          <input type="password" id="dash-reg-pass" class="form-control" style="width:100%; padding:12px; background:#090A10; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#F8FAFC;" placeholder="••••••••" required placeholder="••••••••">
         </div>
 
         <div id="dash-reg-error" style="display:none; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#FCA5A5; padding:8px 12px; border-radius:6px; font-size:0.8rem; margin-bottom:14px; text-align:left;"></div>
@@ -317,28 +317,7 @@
         </button>
       </form>
 
-      <!-- Instant 1-Click Demo Profiles -->
-      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; margin-top: 16px;">
-        <div style="font-family: var(--font-mono); font-size: 0.7rem; color: #64748B; margin-bottom: 10px; text-transform: uppercase;">
-          Quick-Switch Demo Identifiers
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <button type="button" onclick="quickLoginDemo('customer@neurosparkx.com')" style="background: rgba(20, 184, 166, 0.08); border: 1px solid rgba(20, 184, 166, 0.25); color: #2DD4BF; border-radius: 6px; padding: 8px 12px; font-size: 0.78rem; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-            <span>⚡ <strong>Zenith Vance</strong> (Customer — Has Orders)</span>
-            <span style="font-size:0.7rem;">Click to Login →</span>
-          </button>
-          <button type="button" onclick="quickLoginDemo('admin@neurosparkx.com')" style="background: rgba(212, 160, 23, 0.08); border: 1px solid rgba(212, 160, 23, 0.25); color: #FBBF24; border-radius: 6px; padding: 8px 12px; font-size: 0.78rem; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-            <span>👑 <strong>System Commander</strong> (Admin Role)</span>
-            <span style="font-size:0.7rem;">Click to Login →</span>
-          </button>
-          <button type="button" onclick="quickLoginDemo('member@neurosparkx.com')" style="background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.25); color: #A5B4FC; border-radius: 6px; padding: 8px 12px; font-size: 0.78rem; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-            <span>✧ <strong>Aura Solaris</strong> (VIP Member)</span>
-            <span style="font-size:0.7rem;">Click to Login →</span>
-          </button>
-        </div>
       </div>
-
-    </div>
   </div>
 
   <main id="dashboard-profile-main" style="padding-top: calc(var(--nav-h) + 30px); padding-bottom: 120px; display: none;">
@@ -794,13 +773,6 @@
       } else {
         err.style.display = 'block';
         err.innerText = res.message;
-      }
-    }
-
-    function quickLoginDemo(email) {
-      const res = window.NeuroSparkAuth.login(email, 'admin123');
-      if (res.success) {
-        checkDashboardAuth();
       }
     }
 
