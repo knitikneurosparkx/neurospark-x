@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Command Console // Admin — NeuroSpark X</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- CSS Design System -->
+  <link rel="stylesheet" href="/styles/main.css">
+  
+  <!-- Favicon (Official White-Background Favicon & Brand Icons) -->
+  <link rel="icon" type="image/jpeg" href="/assets/favicon-white.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo.png">
+  <link rel="apple-touch-icon" href="/assets/favicon-white.jpg">
+  <link rel="shortcut icon" href="/assets/favicon-white.jpg">
+
+  <style>
+    :root {
+      --admin-sidebar-w: 260px;
+    }
+    body {
+      background: #07070B;
+      color: var(--soft-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .admin-sidebar {
+      width: var(--admin-sidebar-w);
+      background: #0B0B12;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 100;
+    }
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.08) 0%, transparent 60%), #07070B;
+    }
+    .admin-topbar {
+      height: 70px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(11, 11, 18, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+    .admin-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      color: #94A3B8;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      text-decoration: none;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .admin-nav-item:hover {
+      color: #F8FAFC;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .admin-nav-item.active {
+      color: var(--teal);
+      background: rgba(20, 184, 166, 0.08);
+      border-left-color: var(--teal);
+      font-weight: 600;
+    }
+    .stat-kpi-card {
+      background: rgba(15, 16, 26, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .stat-kpi-card:hover {
+      border-color: rgba(20, 184, 166, 0.4);
+      transform: translateY(-2px);
+    }
+    .data-table-container {
+      background: rgba(15, 16, 26, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+    .data-table th {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94A3B8;
+    }
+    .data-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #E2E8F0;
+      vertical-align: middle;
+    }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .badge-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-admin { background: rgba(212, 160, 23, 0.15); color: #FBBF24; border: 1px solid rgba(212, 160, 23, 0.4); }
+    .badge-customer { background: rgba(20, 184, 166, 0.15); color: #2DD4BF; border: 1px solid rgba(20, 184, 166, 0.4); }
+    .badge-member { background: rgba(79, 70, 229, 0.15); color: #A5B4FC; border: 1px solid rgba(79, 70, 229, 0.4); }
+    .badge-user { background: rgba(100, 116, 139, 0.15); color: #CBD5E1; border: 1px solid rgba(100, 116, 139, 0.4); }
+    
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #94A3B8;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-control {
+      width: 100%;
+      background: #090A10;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 12px 14px;
+      color: #F8FAFC;
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 10px rgba(20, 184, 166, 0.3);
+    }
+    .form-control::placeholder {
+      color: #475569;
+    }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .action-btn {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #CBD5E1;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+      background: rgba(20, 184, 166, 0.08);
+    }
+    .action-btn.btn-delete:hover {
+      border-color: #EF4444;
+      color: #EF4444;
+      background: rgba(239, 68, 68, 0.08);
+    }
+    
+    /* Security Gate Barrier */
+    #admin-gate-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 30%, rgba(79, 70, 229, 0.15) 0%, rgba(7, 7, 11, 0.98) 70%);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .gate-card {
+      background: #0E0F17;
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(20, 184, 166, 0.15);
+      text-align: center;
+      position: relative;
+    }
+    .gate-glow-arc {
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    }
+    .image-preview-box {
+      width: 100%;
+      height: 160px;
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      background: #06060A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-top: 10px;
+      position: relative;
+    }
+    .image-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       ADMIN SECURITY ACCESS GATEWAY (Restricts normal users from seeing panel)
+       ========================================================================== -->
+  <div id="admin-gate-screen">
+    <div class="gate-card">
+      <div class="gate-glow-arc"></div>
+      
+      <!-- Brand Logo -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 24px;">
+        <span class="brand-icon" style="width: 44px; height: 44px;">
+          <img src="/assets/logo.png" alt="NeuroSpark X Logo" class="brand-logo-img">
+        </span>
+        <span style="font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;">
+          NEUROSPARK <span class="logo-x" style="color:var(--teal)">X</span>
+        </span>
+      </div>
+
+      <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--teal); letter-spacing: 0.15em; margin-bottom: 8px;">
+        RESTRICTED TERMINAL // LEVEL-4
+      </div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 12px; font-weight: 700;">System Command Console</h2>
+      <p style="color: #94A3B8; font-size: 0.85rem; line-height: 1.5; margin-bottom: 28px;">
+        Administrative credentials required. Standard members and public visitors do not have clearance.
+      </p>
+
+      <form id="admin-login-form" onsubmit="handleAdminAuth(event)">
+        <div class="form-group" style="text-align: left;">
+          <label for="admin-email">Administrator Email</label>
+          <input type="email" id="admin-email" class="form-control" value="admin@neurosparkx.com" required placeholder="admin@neurosparkx.com">
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label for="admin-password">Security Passcode / Password</label>
+          <input type="password" id="admin-password" class="form-control" value="admin123" required placeholder="••••••••">
+        </div>
+
+        <div id="admin-gate-error" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #FCA5A5; padding: 10px 14px; border-radius: 6px; font-size: 0.825rem; margin-bottom: 18px; text-align: left;">
+        </div>
+
+        <button type="submit" class="btn btn-teal" style="width: 100%; padding: 14px; font-weight: 700; margin-bottom: 16px;">
+          UNLOCK COMMAND CONSOLE →
+        </button>
+
+        <a href="/" style="display: block; color: #64748B; font-size: 0.8rem; text-decoration: none;">
+          ← Return to Public Website
+        </a>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MAIN ADMIN CONSOLE INTERFACE
+       ========================================================================== -->
+  <div class="admin-layout" id="admin-dashboard-container" style="display: none;">
+    
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <!-- Brand & Version -->
+      <div style="padding: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <a href="/" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;">
+          <span class="brand-icon" style="width: 32px; height: 32px;">
+            <img src="/assets/logo.png" alt="NeuroSpark X Logo" class="brand-logo-img">
+          </span>
+          <div>
+            <div style="font-family: var(--font-display); font-size: 1rem; font-weight: 700;">
+              NEUROSPARK <span style="color:var(--teal)">X</span>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: #64748B; letter-spacing: 0.1em;">
+              ADMIN CONSOLE v2.6
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div style="padding: 16px 0; flex: 1;">
+        <div class="admin-nav-item active" onclick="switchAdminTab('overview')">
+          <span>📊</span> Overview & KPIs
+        </div>
+        <div class="admin-nav-item" onclick="switchAdminTab('products')">
+          <span>⚡</span> Product Catalog
+        </div>
+        <div class="admin-nav-item" onclick="switchAdminTab('users')">
+          <span>👥</span> User & Role Manager
+        </div>
+        <div class="admin-nav-item" onclick="switchAdminTab('orders')">
+          <span>📦</span> Orders & Revenue
+        </div>
+        <div class="admin-nav-item" onclick="switchAdminTab('tools')">
+          <span>⚙️</span> Database & Sync
+        </div>
+      </div>
+
+      <!-- Live Site Quick Shortcut -->
+      <div style="padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0,0,0,0.2);">
+        <a href="/shop/" target="_blank" class="action-btn" style="width: 100%; justify-content: center; padding: 10px; font-weight: 600;">
+          👁 View Live Store →
+        </a>
+        <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-family: var(--font-mono); font-size: 0.7rem; color: #64748B;">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--teal); margin-right:4px;"></span>
+            SYNCED
+          </span>
+          <button onclick="handleAdminLogout()" style="background:none; border:none; color:#EF4444; font-size:0.75rem; cursor:pointer;">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Top Bar -->
+      <header class="admin-topbar">
+        <div>
+          <span id="tab-breadcrumb-title" style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;">
+            Overview & Analytics
+          </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="btn btn-teal" style="padding: 8px 16px; font-size: 0.8rem;" onclick="openAddProductModal()">
+            + Add Product
+          </button>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 6px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px;">
+            <span style="font-size: 1rem;">👑</span>
+            <span id="admin-display-name" style="font-size: 0.85rem; font-weight: 600;">System Commander</span>
+            <span class="badge-role badge-admin" style="font-size: 0.65rem; padding: 2px 6px;">ADMIN</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Container -->
+      <div style="padding: 32px; flex: 1;">
+
+        <!-- ==================================================================
+             TAB 1: OVERVIEW & KPIS
+             ================================================================== -->
+        <div id="tab-overview" class="admin-tab-pane">
+          <!-- KPI Stat Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 32px;">
+            <div class="stat-kpi-card">
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 8px;">TOTAL REVENUE</div>
+              <div id="kpi-revenue" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--gold);">$0</div>
+              <div style="font-size: 0.75rem; color: var(--teal); margin-top: 6px;">▲ Real-time gross sales</div>
+            </div>
+            <div class="stat-kpi-card">
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 8px;">TOTAL ORDERS</div>
+              <div id="kpi-orders" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--soft-white);">0</div>
+              <div style="font-size: 0.75rem; color: #94A3B8; margin-top: 6px;">Across all registered nodes</div>
+            </div>
+            <div class="stat-kpi-card">
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 8px;">CATALOG PRODUCTS</div>
+              <div id="kpi-products" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--teal);">0</div>
+              <div style="font-size: 0.75rem; color: #94A3B8; margin-top: 6px;">Active on live marketplace</div>
+            </div>
+            <div class="stat-kpi-card">
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #94A3B8; margin-bottom: 8px;">REGISTERED IDENTITIES</div>
+              <div id="kpi-users" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: #A5B4FC;">0</div>
+              <div id="kpi-users-breakdown" style="font-size: 0.75rem; color: #94A3B8; margin-top: 6px;">Members, Customers, Admins</div>
+            </div>
+          </div>
+
+          <!-- Quick Action Shortcuts -->
+          <div style="background: rgba(15, 16, 26, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: 24px; margin-bottom: 32px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 16px; font-weight: 700;">Quick System Controls</h3>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-teal" onclick="openAddProductModal()" style="padding: 10px 18px; font-size: 0.85rem;">
+                + Add New Product to Store
+              </button>
+              <button class="btn btn-indigo" onclick="openAddUserModal()" style="padding: 10px 18px; font-size: 0.85rem;">
+                + Add Registered Member / User
+              </button>
+              <button class="btn btn-glass" onclick="switchAdminTab('orders')" style="padding: 10px 18px; font-size: 0.85rem;">
+                View All Customer Orders
+              </button>
+              <button class="btn btn-glass" onclick="exportDataBackup()" style="padding: 10px 18px; font-size: 0.85rem;">
+                💾 Download Database Backup (JSON)
+              </button>
+            </div>
+          </div>
+
+          <!-- Recent Orders Feed -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Recent Orders & Transactions</h3>
+            <button class="action-btn" onclick="switchAdminTab('orders')">View All →</button>
+          </div>
+          <div class="data-table-container">
+            <table class="data-table" id="overview-orders-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Product(s)</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="overview-orders-tbody">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 2: PRODUCT CATALOG MANAGER
+             ================================================================== -->
+        <div id="tab-products" class="admin-tab-pane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 4px;">Product Catalog & Marketplace</h2>
+              <p style="font-size: 0.85rem; color: #94A3B8;">Add, update images, titles, pricing, descriptions, and download links. Changes reflect live on website.</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button class="btn btn-teal" onclick="openAddProductModal()" style="padding: 10px 20px; font-weight: 700;">
+                + Add New Product
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div style="display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
+            <input type="text" id="product-search-input" class="form-control" placeholder="Search products by title, SKU, summary..." style="max-width: 360px;" oninput="renderAdminProducts()">
+            <select id="product-category-filter" class="form-control" style="max-width: 200px;" onchange="renderAdminProducts()">
+              <option value="all">All Categories</option>
+              <option value="ai-tools">AI & Tools</option>
+              <option value="systems">Systems</option>
+              <option value="learn">Learn</option>
+              <option value="growth">Growth</option>
+              <option value="bundles">Bundles</option>
+              <option value="free">Free / Lead Magnet</option>
+            </select>
+          </div>
+
+          <!-- Products Table -->
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px;">Visual</th>
+                  <th>Title & SKU</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Format / Badge</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-tbody">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 3: USERS & MEMBERS MANAGEMENT
+             ================================================================== -->
+        <div id="tab-users" class="admin-tab-pane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 4px;">User & Role Management</h2>
+              <p style="font-size: 0.85rem; color: #94A3B8;">Manage access privileges, customer orders, member tiers, and administrators.</p>
+            </div>
+            <button class="btn btn-indigo" onclick="openAddUserModal()" style="padding: 10px 20px; font-weight: 700;">
+              + Add User / Member
+            </button>
+          </div>
+
+          <!-- Role Filter Chips -->
+          <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;" id="user-role-filter-chips">
+            <button class="action-btn active" onclick="filterUserRole('all', this)">All Users (<span id="count-all-users">0</span>)</button>
+            <button class="action-btn" onclick="filterUserRole('admin', this)">Admins (<span id="count-admin-users">0</span>)</button>
+            <button class="action-btn" onclick="filterUserRole('customer', this)">Customers (<span id="count-customer-users">0</span>)</button>
+            <button class="action-btn" onclick="filterUserRole('member', this)">Members (<span id="count-member-users">0</span>)</button>
+            <button class="action-btn" onclick="filterUserRole('user', this)">Explorers (<span id="count-standard-users">0</span>)</button>
+          </div>
+
+          <!-- Users Table -->
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Identity</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Orders Count</th>
+                  <th>Joined Date</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Role Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-tbody">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 4: ORDERS & TRANSACTIONS
+             ================================================================== -->
+        <div id="tab-orders" class="admin-tab-pane" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 4px;">Orders & Transaction Ledger</h2>
+              <p style="font-size: 0.85rem; color: #94A3B8;">View every customer purchase, license generation, and digital delivery status.</p>
+            </div>
+            <button class="btn btn-gold" onclick="openManualOrderModal()" style="padding: 10px 20px; font-weight: 700;">
+              + Record Manual Order
+            </button>
+          </div>
+
+          <!-- Orders Table -->
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order Reference</th>
+                  <th>Customer</th>
+                  <th>Items Purchased</th>
+                  <th>Amount</th>
+                  <th>Payment Method</th>
+                  <th>Timestamp</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">License Key</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================================================================
+             TAB 5: DATABASE & TOOLS
+             ================================================================== -->
+        <div id="tab-tools" class="admin-tab-pane" style="display: none;">
+          <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 12px;">Database Backup & Real-Time Sync</h2>
+          <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 30px;">
+            NeuroSpark X uses real-time client-side persistence and broadcast synchronization across all store sessions.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+            <!-- Export Card -->
+            <div style="background: rgba(15, 16, 26, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: 24px;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 10px;">💾 Export Complete Database</h3>
+              <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 18px;">
+                Download a complete JSON snapshot containing all custom products, user profiles, orders, and configuration.
+              </p>
+              <button class="btn btn-teal" onclick="exportDataBackup()" style="width: 100%;">
+                Download JSON Backup
+              </button>
+            </div>
+
+            <!-- Import Card -->
+            <div style="background: rgba(15, 16, 26, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: 24px;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 10px;">📂 Restore / Import Database</h3>
+              <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 18px;">
+                Upload a previously saved JSON backup to instantly restore catalog, users, or order records.
+              </p>
+              <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(event)">
+              <button class="btn btn-glass" onclick="document.getElementById('import-file-input').click()" style="width: 100%;">
+                Choose JSON File to Restore
+              </button>
+            </div>
+
+            <!-- Reset Card -->
+            <div style="background: rgba(15, 16, 26, 0.7); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-md); padding: 24px;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: #F87171;">⚠️ Factory Reset Catalog</h3>
+              <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 18px;">
+                Reset products back to initial NeuroSpark X flagship factory catalog defaults.
+              </p>
+              <button class="action-btn btn-delete" onclick="handleResetCatalog()" style="width: 100%; justify-content: center; padding: 12px;">
+                Reset to Factory Defaults
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ADD / EDIT PRODUCT
+       ========================================================================== -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 id="product-modal-title" style="font-size: 1.25rem; font-weight: 700;">Add New Product</h3>
+        <button class="modal-close-btn" style="position: static;" onclick="closeProductModal()">✕</button>
+      </div>
+
+      <form id="product-form" onsubmit="handleProductFormSubmit(event)">
+        <input type="hidden" id="form-prod-id">
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label for="form-prod-title">Product Title *</label>
+            <input type="text" id="form-prod-title" class="form-control" required placeholder="e.g. NeuroSpark AI Agent OS">
+          </div>
+          <div class="form-group">
+            <label for="form-prod-sku">SKU Code</label>
+            <input type="text" id="form-prod-sku" class="form-control" placeholder="NSX-AI-001">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label for="form-prod-category">Category *</label>
+            <select id="form-prod-category" class="form-control" required>
+              <option value="ai-tools">AI & Tools</option>
+              <option value="systems">Systems</option>
+              <option value="learn">Learn</option>
+              <option value="growth">Growth</option>
+              <option value="bundles">Bundles</option>
+              <option value="free">Free / Lead Magnet</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="form-prod-price">Price ($) *</label>
+            <input type="number" id="form-prod-price" class="form-control" required min="0" value="99">
+          </div>
+          <div class="form-group">
+            <label for="form-prod-orig-price">Original Price ($)</label>
+            <input type="number" id="form-prod-orig-price" class="form-control" min="0" placeholder="149">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label for="form-prod-badge">Badge / Ribbon Text</label>
+            <input type="text" id="form-prod-badge" class="form-control" placeholder="e.g. BEST SELLER or NEW">
+          </div>
+          <div class="form-group">
+            <label for="form-prod-format">Product Format</label>
+            <input type="text" id="form-prod-format" class="form-control" placeholder="e.g. Notion OS + n8n JSON">
+          </div>
+        </div>
+
+        <!-- PRODUCT IMAGE UPLOAD & URL -->
+        <div class="form-group" style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+          <label style="color: var(--teal); font-weight: 700;">Product Image (URL or Direct File Upload)</label>
+          <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-bottom: 10px;">
+            <input type="text" id="form-prod-image" class="form-control" placeholder="Paste image URL (https://... or /assets/...) " oninput="updateImagePreview(this.value)">
+            <label class="btn btn-glass" style="margin: 0; padding: 10px 16px; font-size: 0.8rem; cursor: pointer;">
+              Upload File
+              <input type="file" id="form-prod-file" accept="image/*" style="display:none;" onchange="handleProductImageFile(event)">
+            </label>
+          </div>
+          <div class="image-preview-box" id="product-image-preview">
+            <span style="color:#64748B; font-size:0.8rem;">Image Preview Box</span>
+          </div>
+        </div>
+
+        <!-- Digital Delivery / Download Link -->
+        <div class="form-group">
+          <label for="form-prod-access-link" style="color: var(--gold);">Product Access / Download / Notion Link *</label>
+          <input type="text" id="form-prod-access-link" class="form-control" placeholder="https://notion.so/... or digital download URL customer receives upon purchase">
+        </div>
+
+        <div class="form-group">
+          <label for="form-prod-summary">Summary / Tagline *</label>
+          <input type="text" id="form-prod-summary" class="form-control" required placeholder="Brief one-sentence benefit summary">
+        </div>
+
+        <div class="form-group">
+          <label for="form-prod-what-it-is">Detailed Description (What It Is)</label>
+          <textarea id="form-prod-what-it-is" class="form-control" placeholder="Deep explanation of this system, playbook, or model."></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label for="form-prod-problem">Problem Solved</label>
+            <textarea id="form-prod-problem" class="form-control" placeholder="What friction or obstacle does this eliminate?"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="form-prod-who">Who It's For</label>
+            <textarea id="form-prod-who" class="form-control" placeholder="Creators, developers, founders, thinkers..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="form-prod-included">What You Get (One item per line)</label>
+          <textarea id="form-prod-included" class="form-control" placeholder="Notion Workspace Command Center&#10;12 Pre-configured Agent Prompts&#10;Lifetime Updates"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn btn-glass" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-teal" style="padding: 12px 28px; font-weight: 700;">
+            💾 Save Product & Publish Live
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ADD USER / ROLE
+       ========================================================================== -->
+  <div class="modal-overlay" id="user-modal">
+    <div class="modal-card" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 1.25rem; font-weight: 700;">Add New Registered Identity</h3>
+        <button class="modal-close-btn" style="position: static;" onclick="closeUserModal()">✕</button>
+      </div>
+
+      <form id="user-form" onsubmit="handleUserFormSubmit(event)">
+        <div class="form-group">
+          <label for="form-user-name">Full Name *</label>
+          <input type="text" id="form-user-name" class="form-control" required placeholder="e.g. Zenith Vance">
+        </div>
+        <div class="form-group">
+          <label for="form-user-email">Email Address *</label>
+          <input type="email" id="form-user-email" class="form-control" required placeholder="operator@domain.com">
+        </div>
+        <div class="form-group">
+          <label for="form-user-password">Password / Passcode</label>
+          <input type="text" id="form-user-password" class="form-control" value="user123">
+        </div>
+        <div class="form-group">
+          <label for="form-user-role">Role Clearance *</label>
+          <select id="form-user-role" class="form-control" required>
+            <option value="customer">Customer (Has Purchased / Active License)</option>
+            <option value="member">Member (VIP Signal / Newsletter)</option>
+            <option value="user">User (Standard Registered Explorer)</option>
+            <option value="admin">Admin (Full System Command Privileges)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn btn-glass" onclick="closeUserModal()">Cancel</button>
+          <button type="submit" class="btn btn-indigo" style="padding: 12px 24px; font-weight: 700;">
+            Create Identity
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       SCRIPTS: DATA ENGINE & ADMIN CONTROLLER
+       ========================================================================== -->
+  <script src="/js/data.js"></script>
+  <script>
+    let activeRoleFilter = 'all';
+
+    // 1. Initial Gate Verification
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminClearance();
+      
+      // Reactive updates from database changes
+      window.addEventListener('nsx_data_updated', () => {
+        refreshAllAdminPanels();
+      });
+      window.addEventListener('nsx_auth_state_changed', () => {
+        checkAdminClearance();
+      });
+    });
+
+    function checkAdminClearance() {
+      const gate = document.getElementById('admin-gate-screen');
+      const dashboard = document.getElementById('admin-dashboard-container');
+      const isAdm = window.NeuroSparkAuth && window.NeuroSparkAuth.isAdmin();
+
+      if (isAdm) {
+        gate.style.display = 'none';
+        dashboard.style.display = 'flex';
+        const user = window.NeuroSparkAuth.getCurrentUser();
+        if (user && document.getElementById('admin-display-name')) {
+          document.getElementById('admin-display-name').innerText = user.name;
+        }
+        refreshAllAdminPanels();
+      } else {
+        gate.style.display = 'flex';
+        dashboard.style.display = 'none';
+      }
+    }
+
+    function handleAdminAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('admin-email').value;
+      const pass = document.getElementById('admin-password').value;
+      const errEl = document.getElementById('admin-gate-error');
+
+      const res = window.NeuroSparkAuth.login(email, pass);
+      if (res.success) {
+        if (res.user.role !== 'admin') {
+          errEl.style.display = 'block';
+          errEl.innerText = 'Access Denied: The account "' + res.user.name + '" (' + res.user.role + ') does not have Administrative clearance.';
+          window.NeuroSparkAuth.logout();
+        } else {
+          errEl.style.display = 'none';
+          checkAdminClearance();
+        }
+      } else {
+        errEl.style.display = 'block';
+        errEl.innerText = res.message;
+      }
+    }
+
+    function handleAdminLogout() {
+      window.NeuroSparkAuth.logout();
+      window.location.reload();
+    }
+
+    // Tab Switching
+    function switchAdminTab(tabName) {
+      document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.admin-tab-pane').forEach(el => el.style.display = 'none');
+
+      const targetPane = document.getElementById('tab-' + tabName);
+      if (targetPane) targetPane.style.display = 'block';
+
+      // Mark tab active
+      const tabs = {
+        'overview': 0,
+        'products': 1,
+        'users': 2,
+        'orders': 3,
+        'tools': 4
+      };
+      const navItems = document.querySelectorAll('.admin-nav-item');
+      if (navItems[tabs[tabName]]) navItems[tabs[tabName]].classList.add('active');
+
+      const titles = {
+        'overview': 'Overview & Analytics',
+        'products': 'Product Catalog & Marketplace',
+        'users': 'User & Role Manager',
+        'orders': 'Orders & Transaction Ledger',
+        'tools': 'Database Backup & Sync Tools'
+      };
+      document.getElementById('tab-breadcrumb-title').innerText = titles[tabName] || 'Admin Console';
+    }
+
+    // Refresh UI
+    function refreshAllAdminPanels() {
+      renderAdminKPIs();
+      renderAdminProducts();
+      renderAdminUsers();
+      renderAdminOrders();
+    }
+
+    // RENDER KPIS
+    function renderAdminKPIs() {
+      const stats = window.NeuroSparkDB.getStats();
+      document.getElementById('kpi-revenue').innerText = '$' + stats.totalRevenue.toLocaleString();
+      document.getElementById('kpi-orders').innerText = stats.totalOrders;
+      document.getElementById('kpi-products').innerText = stats.totalProducts;
+      document.getElementById('kpi-users').innerText = stats.totalUsers;
+      document.getElementById('kpi-users-breakdown').innerText = 
+        `${stats.customersCount} Customers, ${stats.membersCount} Members, ${stats.adminsCount} Admins`;
+
+      // Update role counts in user tab
+      document.getElementById('count-all-users').innerText = stats.totalUsers;
+      document.getElementById('count-admin-users').innerText = stats.adminsCount;
+      document.getElementById('count-customer-users').innerText = stats.customersCount;
+      document.getElementById('count-member-users').innerText = stats.membersCount;
+      document.getElementById('count-standard-users').innerText = stats.normalUsersCount;
+
+      // Overview recent orders table
+      const recentOrders = window.NeuroSparkDB.getOrders().slice(0, 5);
+      const tbody = document.getElementById('overview-orders-tbody');
+      tbody.innerHTML = recentOrders.map(o => `
+        <tr>
+          <td style="font-family:var(--font-mono); color:var(--teal); font-weight:600;">#${o.id}</td>
+          <td>
+            <div style="font-weight:600;">${o.customerName}</div>
+            <div style="font-size:0.75rem; color:#64748B;">${o.customerEmail}</div>
+          </td>
+          <td>${(o.items || []).map(i => i.title).join(', ') || 'System Asset'}</td>
+          <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold);">$${o.totalAmount}</td>
+          <td style="font-size:0.8rem; color:#94A3B8;">${o.createdAt || 'Recent'}</td>
+          <td><span class="badge-role badge-customer">${o.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // RENDER PRODUCTS
+    function renderAdminProducts() {
+      const prods = window.NeuroSparkDB.getProducts();
+      const search = (document.getElementById('product-search-input')?.value || '').toLowerCase();
+      const cat = document.getElementById('product-category-filter')?.value || 'all';
+
+      const filtered = prods.filter(p => {
+        const matchesCat = cat === 'all' || p.category === cat;
+        const matchesSearch = !search || 
+          p.title.toLowerCase().includes(search) || 
+          (p.sku && p.sku.toLowerCase().includes(search)) ||
+          (p.summary && p.summary.toLowerCase().includes(search));
+        return matchesCat && matchesSearch;
+      });
+
+      const tbody = document.getElementById('admin-products-tbody');
+      if (!tbody) return;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:#64748B;">No products matched the filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => {
+        const visualHtml = (p.image || p.imageUrl || p.bannerImage) ?
+          `<img src="${p.image || p.imageUrl || p.bannerImage}" style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">` :
+          `<div style="width:48px; height:48px; border-radius:6px; background:#141522; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:var(--teal);">⚡</div>`;
+
+        return `
+          <tr>
+            <td>${visualHtml}</td>
+            <td>
+              <div style="font-weight:600; font-size:0.95rem; color:var(--soft-white);">${p.title}</div>
+              <div style="font-family:var(--font-mono); font-size:0.75rem; color:#64748B;">SKU: ${p.sku || p.id}</div>
+            </td>
+            <td><span class="badge-role badge-member">${p.categoryName || p.category}</span></td>
+            <td>
+              <span style="font-family:var(--font-mono); font-weight:700; color:${p.price === 0 ? 'var(--teal)' : 'var(--gold)'}; font-size:1rem;">
+                ${p.price === 0 ? 'FREE' : '$' + p.price}
+              </span>
+              ${p.originalPrice ? `<div style="font-size:0.75rem; color:#64748B; text-decoration:line-through;">$${p.originalPrice}</div>` : ''}
+            </td>
+            <td>
+              <div style="font-size:0.8rem; color:#CBD5E1;">${p.format || 'System Module'}</div>
+              ${p.badge ? `<span style="font-size:0.65rem; color:var(--gold); border:1px solid rgba(212,160,23,0.3); padding:2px 6px; border-radius:4px;">${p.badge}</span>` : ''}
+            </td>
+            <td style="text-align: right;">
+              <div style="display:inline-flex; gap:6px;">
+                <button class="action-btn" onclick="openEditProductModal('${p.id}')">✏️ Edit</button>
+                <a href="/product/?id=${p.id}" target="_blank" class="action-btn">🔗 Preview</a>
+                <button class="action-btn btn-delete" onclick="handleDeleteProduct('${p.id}', '${p.title.replace(/'/g, "\\'")}')">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // RENDER USERS
+    function renderAdminUsers() {
+      const users = window.NeuroSparkDB.getUsers();
+      const filtered = users.filter(u => activeRoleFilter === 'all' || u.role === activeRoleFilter);
+      const tbody = document.getElementById('admin-users-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = filtered.map(u => {
+        const orderCount = window.NeuroSparkDB.getOrderCountForUser(u.email);
+        const roleBadges = {
+          'admin': '<span class="badge-role badge-admin">👑 Admin</span>',
+          'customer': '<span class="badge-role badge-customer">⚡ Customer</span>',
+          'member': '<span class="badge-role badge-member">✧ Member</span>',
+          'user': '<span class="badge-role badge-user">⬡ Explorer</span>'
+        };
+
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                  ${u.avatar || '👤'}
+                </div>
+                <div>
+                  <div style="font-weight:600;">${u.name}</div>
+                  <div style="font-size:0.75rem; color:#64748B;">${u.bio || 'Registered Operator'}</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-family:var(--font-mono); font-size:0.85rem;">${u.email}</td>
+            <td>${roleBadges[u.role] || u.role}</td>
+            <td>
+              <span style="font-family:var(--font-mono); font-weight:700; color:${orderCount > 0 ? 'var(--teal)' : '#64748B'};">
+                ${orderCount} ${orderCount === 1 ? 'Order' : 'Orders'}
+              </span>
+            </td>
+            <td style="font-size:0.8rem; color:#94A3B8;">${u.joinedAt || '2026-11-01'}</td>
+            <td>
+              <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10B981; margin-right:4px;"></span>
+              Active
+            </td>
+            <td style="text-align: right;">
+              <select class="form-control" style="width:auto; display:inline-block; padding:4px 8px; font-size:0.75rem;" onchange="handleUserRoleChange('${u.id}', this.value)">
+                <option value="user" ${u.role === 'user' ? 'selected' : ''}>Set as User</option>
+                <option value="member" ${u.role === 'member' ? 'selected' : ''}>Set as Member</option>
+                <option value="customer" ${u.role === 'customer' ? 'selected' : ''}>Set as Customer</option>
+                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Set as Admin</option>
+              </select>
+              ${u.role !== 'admin' ? `<button class="action-btn btn-delete" style="margin-left:6px;" onclick="handleDeleteUser('${u.id}')">✕</button>` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterUserRole(role, btn) {
+      activeRoleFilter = role;
+      document.querySelectorAll('#user-role-filter-chips .action-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderAdminUsers();
+    }
+
+    function handleUserRoleChange(userId, newRole) {
+      window.NeuroSparkDB.updateUserRole(userId, newRole);
+      renderAdminUsers();
+      renderAdminKPIs();
+    }
+
+    function handleDeleteUser(userId) {
+      if (confirm('Are you sure you want to remove this user profile?')) {
+        window.NeuroSparkDB.deleteUser(userId);
+        renderAdminUsers();
+        renderAdminKPIs();
+      }
+    }
+
+    // RENDER ORDERS
+    function renderAdminOrders() {
+      const orders = window.NeuroSparkDB.getOrders();
+      const tbody = document.getElementById('admin-orders-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td style="font-family:var(--font-mono); color:var(--teal); font-weight:700;">#${o.id}</td>
+          <td>
+            <div style="font-weight:600;">${o.customerName}</div>
+            <div style="font-size:0.75rem; color:#64748B;">${o.customerEmail}</div>
+          </td>
+          <td>
+            ${(o.items || []).map(i => `<div style="font-size:0.85rem; color:var(--soft-white);">${i.title} (x${i.quantity || 1})</div>`).join('')}
+          </td>
+          <td style="font-family:var(--font-mono); font-weight:700; color:var(--gold); font-size:1.05rem;">
+            $${o.totalAmount}
+          </td>
+          <td style="font-size:0.8rem; color:#94A3B8;">${o.paymentMethod || 'Stripe'}</td>
+          <td style="font-size:0.8rem; color:#94A3B8;">${o.createdAt || 'Recent'}</td>
+          <td><span class="badge-role badge-customer">${o.status}</span></td>
+          <td style="text-align: right; font-family:var(--font-mono); font-size:0.75rem; color:var(--teal);">
+            ${o.licenseKey || 'NSX-PRO-KEY'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // PRODUCT MODAL OPERATIONS
+    function openAddProductModal() {
+      document.getElementById('product-form').reset();
+      document.getElementById('form-prod-id').value = '';
+      document.getElementById('product-modal-title').innerText = 'Add New Product to Store';
+      document.getElementById('product-image-preview').innerHTML = '<span style="color:#64748B; font-size:0.8rem;">Image Preview Box</span>';
+      document.getElementById('product-modal').classList.add('active');
+    }
+
+    function openEditProductModal(prodId) {
+      const prod = window.NeuroSparkDB.getProductById(prodId);
+      if (!prod) return;
+
+      document.getElementById('form-prod-id').value = prod.id;
+      document.getElementById('product-modal-title').innerText = 'Edit Product: ' + prod.title;
+      document.getElementById('form-prod-title').value = prod.title || '';
+      document.getElementById('form-prod-sku').value = prod.sku || '';
+      document.getElementById('form-prod-category').value = prod.category || 'ai-tools';
+      document.getElementById('form-prod-price').value = prod.price;
+      document.getElementById('form-prod-orig-price').value = prod.originalPrice || '';
+      document.getElementById('form-prod-badge').value = prod.badge || prod.ribbonText || '';
+      document.getElementById('form-prod-format').value = prod.format || '';
+      document.getElementById('form-prod-image').value = prod.image || prod.imageUrl || prod.bannerImage || '';
+      document.getElementById('form-prod-access-link').value = prod.accessLink || prod.downloadUrl || '';
+      document.getElementById('form-prod-summary').value = prod.summary || '';
+      document.getElementById('form-prod-what-it-is').value = prod.whatItIs || '';
+      document.getElementById('form-prod-problem').value = prod.problemSolved || '';
+      document.getElementById('form-prod-who').value = prod.whoItsFor || '';
+      document.getElementById('form-prod-included').value = (prod.whatYouGet || []).join('\n');
+
+      updateImagePreview(prod.image || prod.imageUrl || prod.bannerImage || '');
+      document.getElementById('product-modal').classList.add('active');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.remove('active');
+    }
+
+    function updateImagePreview(src) {
+      const box = document.getElementById('product-image-preview');
+      if (src && src.trim()) {
+        box.innerHTML = `<img src="${src}" alt="Preview" onerror="this.onerror=null; this.src='/assets/logo.png';">`;
+      } else {
+        box.innerHTML = '<span style="color:#64748B; font-size:0.8rem;">Image Preview Box</span>';
+      }
+    }
+
+    function handleProductImageFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        document.getElementById('form-prod-image').value = dataUrl;
+        updateImagePreview(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleProductFormSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('form-prod-id').value;
+      const categoryVal = document.getElementById('form-prod-category').value;
+      const catNames = {
+        'ai-tools': 'AI & Tools',
+        'systems': 'Systems',
+        'learn': 'Learn',
+        'growth': 'Growth',
+        'bundles': 'Bundles',
+        'free': 'Free / Lead Magnet'
+      };
+
+      const includedArr = document.getElementById('form-prod-included').value
+        .split('\n')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const prodData = {
+        id: id || undefined,
+        title: document.getElementById('form-prod-title').value.trim(),
+        sku: document.getElementById('form-prod-sku').value.trim() || undefined,
+        category: categoryVal,
+        categoryName: catNames[categoryVal] || categoryVal,
+        price: Number(document.getElementById('form-prod-price').value),
+        originalPrice: document.getElementById('form-prod-orig-price').value ? Number(document.getElementById('form-prod-orig-price').value) : null,
+        badge: document.getElementById('form-prod-badge').value.trim(),
+        ribbonText: document.getElementById('form-prod-badge').value.trim(),
+        format: document.getElementById('form-prod-format').value.trim(),
+        image: document.getElementById('form-prod-image').value.trim(),
+        imageUrl: document.getElementById('form-prod-image').value.trim(),
+        bannerImage: document.getElementById('form-prod-image').value.trim(),
+        accessLink: document.getElementById('form-prod-access-link').value.trim(),
+        downloadUrl: document.getElementById('form-prod-access-link').value.trim(),
+        summary: document.getElementById('form-prod-summary').value.trim(),
+        whatItIs: document.getElementById('form-prod-what-it-is').value.trim(),
+        problemSolved: document.getElementById('form-prod-problem').value.trim(),
+        whoItsFor: document.getElementById('form-prod-who').value.trim(),
+        whatYouGet: includedArr.length ? includedArr : ["System Blueprint & Architecture Access", "Lifetime Updates"]
+      };
+
+      window.NeuroSparkDB.saveProduct(prodData);
+      closeProductModal();
+      refreshAllAdminPanels();
+      alert('Product saved and published directly to live website!');
+    }
+
+    function handleDeleteProduct(prodId, title) {
+      if (confirm(`Are you sure you want to delete "${title}" from the catalog?`)) {
+        window.NeuroSparkDB.deleteProduct(prodId);
+        refreshAllAdminPanels();
+      }
+    }
+
+    // USER MODAL OPERATIONS
+    function openAddUserModal() {
+      document.getElementById('user-form').reset();
+      document.getElementById('user-modal').classList.add('active');
+    }
+
+    function closeUserModal() {
+      document.getElementById('user-modal').classList.remove('active');
+    }
+
+    function handleUserFormSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('form-user-name').value;
+      const email = document.getElementById('form-user-email').value;
+      const pass = document.getElementById('form-user-password').value;
+      const role = document.getElementById('form-user-role').value;
+
+      const res = window.NeuroSparkAuth.register(name, email, pass, role);
+      if (res.success) {
+        closeUserModal();
+        renderAdminUsers();
+        renderAdminKPIs();
+        alert('User identity created successfully!');
+      } else {
+        alert(res.message);
+      }
+    }
+
+    // MANUAL ORDER MODAL
+    function openManualOrderModal() {
+      const email = prompt('Enter customer email for manual order:');
+      if (!email) return;
+
+      const prods = window.NeuroSparkDB.getProducts();
+      const prodTitle = prompt('Enter product title (or leave blank for flagship AI OS):', prods[0].title);
+      const amount = prompt('Enter total amount ($):', '149');
+
+      window.NeuroSparkDB.createOrder({
+        customerName: email.split('@')[0],
+        customerEmail: email,
+        totalAmount: Number(amount) || 149,
+        items: [{ title: prodTitle || prods[0].title, price: Number(amount) || 149 }]
+      });
+
+      refreshAllAdminPanels();
+      alert('Manual order recorded and customer license minted!');
+    }
+
+    // DATABASE BACKUP & RESTORE
+    function exportDataBackup() {
+      const data = window.NeuroSparkDB.exportDatabase();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `neurospark-x-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function handleImportFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (window.NeuroSparkDB.importDatabase(parsed)) {
+            refreshAllAdminPanels();
+            alert('Database restored successfully!');
+          }
+        } catch (err) {
+          alert('Invalid backup file format: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function handleResetCatalog() {
+      if (confirm('Reset store catalog to initial factory specifications? This will overwrite custom products.')) {
+        window.NeuroSparkDB.resetProducts();
+        refreshAllAdminPanels();
+        alert('Catalog reset to factory defaults.');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting to /admin/...</title>
+  <!-- Favicon (Official White-Background Favicon & Brand Icons) -->
+  <link rel="icon" type="image/jpeg" href="/assets/favicon-white.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo.png">
+  <link rel="apple-touch-icon" href="/assets/favicon-white.jpg">
+  <link rel="shortcut icon" href="/assets/favicon-white.jpg">
+  <meta http-equiv="refresh" content="0; url=/admin/">
+  <script>
+    var target = '/admin/' + window.location.search + window.location.hash;
+    window.location.replace(target);
+  </script>
+</head>
+<body style="background:#0A0A0F; color:#F8FAFC; font-family:sans-serif; text-align:center; padding-top:20vh;">
+  <p>Redirecting to <a href="/admin/" style="color:#14B8A6;">/admin/</a>...</p>
+</body>
+</html>

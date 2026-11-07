@@ -316,6 +316,20 @@ window.NeuroSparkData = {
 
   // Product Visual / 3D Mockup Generator
   getProductVisual: function (prodId) {
+    // 1. Check if product exists in database and has custom image URL or uploaded data URI
+    if (window.NeuroSparkDB && typeof window.NeuroSparkDB.getProductById === 'function') {
+      const p = window.NeuroSparkDB.getProductById(prodId);
+      if (p && (p.image || p.imageUrl || p.bannerImage)) {
+        const src = p.image || p.imageUrl || p.bannerImage;
+        return `
+          <div class="prod-img-container" style="width:100%; height:100%; position:relative; overflow:hidden; background:#06060A; display:flex; align-items:center; justify-content:center;">
+            <img src="${src}" alt="${p.title || 'Product Visual'}" class="prod-img-visual" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.onerror=null; this.src='/assets/logo.png'; this.style.objectFit='contain'; this.style.padding='24px';">
+            <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,10,15,0.05) 0%, rgba(10,10,15,0.65) 100%); pointer-events:none;"></div>
+          </div>
+        `;
+      }
+    }
+
     switch (prodId) {
       case 'prod-1':
         return `
@@ -534,3 +548,478 @@ window.NeuroSparkData = {
     }
   }
 };
+
+/* ==========================================================================
+   NEUROSPARK X — CLIENT-SIDE REAL-TIME DATA STORE & AUTH ENGINE
+   ========================================================================== */
+
+(function () {
+  const STORAGE_KEYS = {
+    PRODUCTS: 'nsx_products',
+    USERS: 'nsx_users',
+    ORDERS: 'nsx_orders',
+    CURRENT_USER: 'nsx_current_user',
+    SETTINGS: 'nsx_settings'
+  };
+
+  // Seed Initial Users (Roles: admin, customer, member, user)
+  const DEFAULT_USERS = [
+    {
+      id: 'usr-admin-01',
+      name: 'System Commander',
+      email: 'admin@neurosparkx.com',
+      password: 'admin123',
+      role: 'admin',
+      status: 'active',
+      avatar: '👑',
+      joinedAt: '2026-10-15',
+      bio: 'Lead System Architect & Core Site Administrator'
+    },
+    {
+      id: 'usr-cust-02',
+      name: 'Zenith Vance',
+      email: 'customer@neurosparkx.com',
+      password: 'customer123',
+      role: 'customer',
+      status: 'active',
+      avatar: '⚡',
+      joinedAt: '2026-11-01',
+      bio: 'Sovereign Creator & Autonomous Systems Operator'
+    },
+    {
+      id: 'usr-memb-03',
+      name: 'Aura Solaris',
+      email: 'member@neurosparkx.com',
+      password: 'member123',
+      role: 'member',
+      status: 'active',
+      avatar: '✧',
+      joinedAt: '2026-11-03',
+      bio: 'VIP Telegram Intelligence Signal Member'
+    },
+    {
+      id: 'usr-norm-04',
+      name: 'Neo Explorer',
+      email: 'user@neurosparkx.com',
+      password: 'user123',
+      role: 'user',
+      status: 'active',
+      avatar: '⬡',
+      joinedAt: '2026-11-06',
+      bio: 'Standard Registered Explorer'
+    }
+  ];
+
+  // Seed Initial Real Orders
+  const DEFAULT_ORDERS = [
+    {
+      id: 'NSX-2026-94821',
+      userId: 'usr-cust-02',
+      customerName: 'Zenith Vance',
+      customerEmail: 'customer@neurosparkx.com',
+      items: [
+        {
+          id: 'prod-1',
+          title: 'NeuroSpark AI Intelligence Agent OS',
+          price: 149,
+          quantity: 1,
+          accessLink: 'https://neurosparkx.com/notion/ai-agent-os'
+        }
+      ],
+      totalAmount: 149,
+      paymentMethod: 'Credit Card (Stripe)',
+      status: 'Completed',
+      createdAt: '2026-11-05 14:22:10',
+      licenseKey: 'NSX-LIC-8921-AI-OS-VIP'
+    },
+    {
+      id: 'NSX-2026-81932',
+      userId: 'usr-cust-02',
+      customerName: 'Zenith Vance',
+      customerEmail: 'customer@neurosparkx.com',
+      items: [
+        {
+          id: 'prod-2',
+          title: 'The Infinite Idea Engine & System Architecture',
+          price: 99,
+          quantity: 1,
+          accessLink: 'https://neurosparkx.com/notion/idea-engine'
+        }
+      ],
+      totalAmount: 99,
+      paymentMethod: 'Solana (Crypto)',
+      status: 'Completed',
+      createdAt: '2026-11-06 09:15:44',
+      licenseKey: 'NSX-LIC-4412-IDEA-ENG-PRO'
+    },
+    {
+      id: 'NSX-2026-72814',
+      userId: 'usr-memb-03',
+      customerName: 'Aura Solaris',
+      customerEmail: 'member@neurosparkx.com',
+      items: [
+        {
+          id: 'prod-6',
+          title: 'The Matrix-to-Market Automation Blueprint',
+          price: 0,
+          quantity: 1,
+          accessLink: 'https://t.me/OfficialNeuroSparkX'
+        }
+      ],
+      totalAmount: 0,
+      paymentMethod: 'Free Claim (VIP)',
+      status: 'Completed',
+      createdAt: '2026-11-06 18:40:02',
+      licenseKey: 'NSX-LIC-FREE-CLAIM-VIP'
+    }
+  ];
+
+  function getStorage(key, fallback) {
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : fallback;
+    } catch (e) {
+      console.warn('Storage read warning:', e);
+      return fallback;
+    }
+  }
+
+  function setStorage(key, val) {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nsx_data_updated', { detail: { key, val } }));
+      }
+    } catch (e) {
+      console.error('Storage write error:', e);
+    }
+  }
+
+  // Database Interface
+  window.NeuroSparkDB = {
+    // PRODUCTS CRUD
+    getProducts: function () {
+      let stored = getStorage(STORAGE_KEYS.PRODUCTS, null);
+      if (!stored || !Array.isArray(stored) || stored.length === 0) {
+        stored = (window.NeuroSparkData && window.NeuroSparkData.products) ? JSON.parse(JSON.stringify(window.NeuroSparkData.products)) : [];
+        setStorage(STORAGE_KEYS.PRODUCTS, stored);
+      }
+      return stored;
+    },
+
+    getProductById: function (id) {
+      const prods = this.getProducts();
+      return prods.find(p => p.id === id) || null;
+    },
+
+    saveProduct: function (prod) {
+      const prods = this.getProducts();
+      if (!prod.id) {
+        prod.id = 'prod-' + Date.now();
+      }
+      if (!prod.sku) {
+        prod.sku = 'NSX-' + Math.floor(100 + Math.random() * 900);
+      }
+      const existingIdx = prods.findIndex(p => p.id === prod.id);
+      if (existingIdx >= 0) {
+        prods[existingIdx] = { ...prods[existingIdx], ...prod };
+      } else {
+        prods.unshift(prod);
+      }
+      setStorage(STORAGE_KEYS.PRODUCTS, prods);
+      if (window.NeuroSparkData) {
+        window.NeuroSparkData.products = prods;
+      }
+      return prod;
+    },
+
+    deleteProduct: function (id) {
+      let prods = this.getProducts();
+      prods = prods.filter(p => p.id !== id);
+      setStorage(STORAGE_KEYS.PRODUCTS, prods);
+      if (window.NeuroSparkData) {
+        window.NeuroSparkData.products = prods;
+      }
+      return true;
+    },
+
+    resetProducts: function () {
+      localStorage.removeItem(STORAGE_KEYS.PRODUCTS);
+      const prods = this.getProducts();
+      if (window.NeuroSparkData) {
+        window.NeuroSparkData.products = prods;
+      }
+      return prods;
+    },
+
+    // USERS CRUD
+    getUsers: function () {
+      let users = getStorage(STORAGE_KEYS.USERS, null);
+      if (!users || !Array.isArray(users) || users.length === 0) {
+        users = [...DEFAULT_USERS];
+        setStorage(STORAGE_KEYS.USERS, users);
+      }
+      return users;
+    },
+
+    getUserById: function (idOrEmail) {
+      if (!idOrEmail) return null;
+      const users = this.getUsers();
+      const target = idOrEmail.toLowerCase();
+      return users.find(u => u.id === idOrEmail || u.email.toLowerCase() === target) || null;
+    },
+
+    saveUser: function (user) {
+      const users = this.getUsers();
+      if (!user.id) {
+        user.id = 'usr-' + Date.now();
+      }
+      if (!user.joinedAt) {
+        user.joinedAt = new Date().toISOString().split('T')[0];
+      }
+      if (!user.status) {
+        user.status = 'active';
+      }
+      if (!user.avatar) {
+        user.avatar = user.role === 'admin' ? '👑' : user.role === 'customer' ? '⚡' : '✧';
+      }
+      const existingIdx = users.findIndex(u => u.id === user.id || u.email.toLowerCase() === user.email.toLowerCase());
+      if (existingIdx >= 0) {
+        users[existingIdx] = { ...users[existingIdx], ...user };
+      } else {
+        users.unshift(user);
+      }
+      setStorage(STORAGE_KEYS.USERS, users);
+      return user;
+    },
+
+    deleteUser: function (id) {
+      let users = this.getUsers();
+      users = users.filter(u => u.id !== id && u.email !== id);
+      setStorage(STORAGE_KEYS.USERS, users);
+      return true;
+    },
+
+    updateUserRole: function (id, newRole) {
+      const users = this.getUsers();
+      const user = users.find(u => u.id === id || u.email.toLowerCase() === (id || '').toLowerCase());
+      if (user) {
+        user.role = newRole;
+        if (newRole === 'admin') user.avatar = '👑';
+        else if (newRole === 'customer') user.avatar = '⚡';
+        else if (newRole === 'member') user.avatar = '✧';
+        else user.avatar = '⬡';
+        setStorage(STORAGE_KEYS.USERS, users);
+        return user;
+      }
+      return null;
+    },
+
+    // ORDERS CRUD
+    getOrders: function () {
+      let orders = getStorage(STORAGE_KEYS.ORDERS, null);
+      if (!orders || !Array.isArray(orders) || orders.length === 0) {
+        orders = [...DEFAULT_ORDERS];
+        setStorage(STORAGE_KEYS.ORDERS, orders);
+      }
+      return orders;
+    },
+
+    getOrderById: function (id) {
+      const orders = this.getOrders();
+      return orders.find(o => o.id === id) || null;
+    },
+
+    createOrder: function (orderData) {
+      const orders = this.getOrders();
+      const newOrder = {
+        id: orderData.id || `NSX-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+        userId: orderData.userId || (window.NeuroSparkAuth.getCurrentUser() ? window.NeuroSparkAuth.getCurrentUser().id : null),
+        customerName: orderData.customerName || (window.NeuroSparkAuth.getCurrentUser() ? window.NeuroSparkAuth.getCurrentUser().name : 'Customer'),
+        customerEmail: (orderData.customerEmail || (window.NeuroSparkAuth.getCurrentUser() ? window.NeuroSparkAuth.getCurrentUser().email : 'guest@neurosparkx.com')).toLowerCase(),
+        items: orderData.items || [],
+        totalAmount: Number(orderData.totalAmount || 0),
+        paymentMethod: orderData.paymentMethod || 'Credit Card (Stripe)',
+        status: orderData.status || 'Completed',
+        createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        licenseKey: `NSX-LIC-${Math.floor(1000 + Math.random() * 9000)}-${(orderData.items && orderData.items[0] && orderData.items[0].id ? orderData.items[0].id : 'SYS').toUpperCase()}`
+      };
+
+      orders.unshift(newOrder);
+      setStorage(STORAGE_KEYS.ORDERS, orders);
+
+      // Upgrade user to customer tier automatically if not already customer or admin
+      if (newOrder.customerEmail) {
+        const user = this.getUserById(newOrder.customerEmail);
+        if (user && (user.role === 'user' || user.role === 'member')) {
+          user.role = 'customer';
+          user.avatar = '⚡';
+          this.saveUser(user);
+        } else if (!user) {
+          this.saveUser({
+            name: newOrder.customerName,
+            email: newOrder.customerEmail,
+            password: 'customer123',
+            role: 'customer',
+            status: 'active',
+            avatar: '⚡'
+          });
+        }
+      }
+
+      return newOrder;
+    },
+
+    getOrdersByUserId: function (userIdOrEmail) {
+      if (!userIdOrEmail) return [];
+      const orders = this.getOrders();
+      const target = (userIdOrEmail || '').toLowerCase();
+      return orders.filter(o => 
+        (o.userId && o.userId.toLowerCase() === target) || 
+        (o.customerEmail && o.customerEmail.toLowerCase() === target)
+      );
+    },
+
+    getOrderCountForUser: function (userIdOrEmail) {
+      return this.getOrdersByUserId(userIdOrEmail).length;
+    },
+
+    // STATS & AGGREGATIONS
+    getStats: function () {
+      const prods = this.getProducts();
+      const users = this.getUsers();
+      const orders = this.getOrders();
+
+      const totalRevenue = orders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+      const membersCount = users.filter(u => u.role === 'member').length;
+      const customersCount = users.filter(u => u.role === 'customer').length;
+      const adminsCount = users.filter(u => u.role === 'admin').length;
+      const normalUsersCount = users.filter(u => u.role === 'user').length;
+
+      return {
+        totalProducts: prods.length,
+        totalUsers: users.length,
+        totalOrders: orders.length,
+        totalRevenue: totalRevenue,
+        membersCount,
+        customersCount,
+        adminsCount,
+        normalUsersCount
+      };
+    },
+
+    exportDatabase: function () {
+      return {
+        exportedAt: new Date().toISOString(),
+        products: this.getProducts(),
+        users: this.getUsers(),
+        orders: this.getOrders()
+      };
+    },
+
+    importDatabase: function (data) {
+      if (!data) return false;
+      if (data.products && Array.isArray(data.products)) {
+        setStorage(STORAGE_KEYS.PRODUCTS, data.products);
+        if (window.NeuroSparkData) window.NeuroSparkData.products = data.products;
+      }
+      if (data.users && Array.isArray(data.users)) setStorage(STORAGE_KEYS.USERS, data.users);
+      if (data.orders && Array.isArray(data.orders)) setStorage(STORAGE_KEYS.ORDERS, data.orders);
+      return true;
+    }
+  };
+
+  // Auth Interface
+  window.NeuroSparkAuth = {
+    getCurrentUser: function () {
+      return getStorage(STORAGE_KEYS.CURRENT_USER, null);
+    },
+
+    login: function (email, password) {
+      const users = window.NeuroSparkDB.getUsers();
+      const targetEmail = (email || '').trim().toLowerCase();
+      const user = users.find(u => u.email.toLowerCase() === targetEmail);
+      
+      if (!user) {
+        return { success: false, message: 'Account not found. Please verify your email or register.' };
+      }
+      
+      // Passcode match (allows assigned password or default master admin123)
+      if (user.password && user.password !== password && password !== 'admin123') {
+        return { success: false, message: 'Invalid security passcode/password.' };
+      }
+
+      setStorage(STORAGE_KEYS.CURRENT_USER, user);
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nsx_auth_state_changed', { detail: { user } }));
+      }
+      return { success: true, user };
+    },
+
+    register: function (name, email, password, role = 'member') {
+      const users = window.NeuroSparkDB.getUsers();
+      const targetEmail = (email || '').trim().toLowerCase();
+      const existing = users.find(u => u.email.toLowerCase() === targetEmail);
+      if (existing) {
+        return { success: false, message: 'An account with this email already exists. Please log in.' };
+      }
+
+      const newUser = {
+        id: 'usr-' + Date.now(),
+        name: (name || 'Sovereign Operator').trim(),
+        email: targetEmail,
+        password: password || 'user123',
+        role: role,
+        status: 'active',
+        avatar: role === 'admin' ? '👑' : role === 'customer' ? '⚡' : '✧',
+        joinedAt: new Date().toISOString().split('T')[0]
+      };
+
+      window.NeuroSparkDB.saveUser(newUser);
+      setStorage(STORAGE_KEYS.CURRENT_USER, newUser);
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nsx_auth_state_changed', { detail: { user: newUser } }));
+      }
+      return { success: true, user: newUser };
+    },
+
+    logout: function () {
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nsx_auth_state_changed', { detail: { user: null } }));
+      }
+      if (typeof window !== 'undefined' && window.location && window.location.pathname.includes('/admin')) {
+        window.location.reload();
+      }
+      return true;
+    },
+
+    isAdmin: function () {
+      const user = this.getCurrentUser();
+      return Boolean(user && user.role === 'admin');
+    }
+  };
+
+  // Sync window.NeuroSparkData.products with Database
+  if (window.NeuroSparkData) {
+    window.NeuroSparkData.products = window.NeuroSparkDB.getProducts();
+  }
+
+  // Multi-tab storage sync
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEYS.PRODUCTS && window.NeuroSparkData) {
+        window.NeuroSparkData.products = window.NeuroSparkDB.getProducts();
+        if (typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('nsx_data_updated', { detail: { key: e.key } }));
+        }
+      }
+      if (e.key === STORAGE_KEYS.CURRENT_USER) {
+        if (typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('nsx_auth_state_changed', { detail: { user: window.NeuroSparkAuth.getCurrentUser() } }));
+        }
+      }
+    });
+  }
+})();
+

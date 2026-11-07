@@ -463,7 +463,9 @@
     // URL Parameter Parsing & Dynamic WooCommerce Rendering
     const urlParams = new URLSearchParams(window.location.search);
     const prodId = urlParams.get('id') || 'prod-1';
-    let currentProd = window.NeuroSparkData.products.find(p => p.id === prodId) || window.NeuroSparkData.products[0];
+    const allProds = (window.NeuroSparkDB && typeof window.NeuroSparkDB.getProducts === 'function') ? window.NeuroSparkDB.getProducts() : window.NeuroSparkData.products;
+    let currentProd = (window.NeuroSparkDB && typeof window.NeuroSparkDB.getProductById === 'function') ? window.NeuroSparkDB.getProductById(prodId) : allProds.find(p => p.id === prodId);
+    if (!currentProd && allProds.length) currentProd = allProds[0];
     let selectedQuantity = 1;
     let selectedTierMultiplier = 1;
 
@@ -533,7 +535,7 @@
 
       // Related Products
       const relGrid = document.getElementById('related-products-grid');
-      const related = window.NeuroSparkData.products.filter(p => p.id !== currentProd.id).slice(0, 3);
+      const related = allProds.filter(p => p.id !== currentProd.id).slice(0, 3);
       relGrid.innerHTML = related.map(rp => `
         <div class="product-card">
           <div class="product-card-visual" onclick="window.location.href='/product/?id=${rp.id}'" style="height:170px;">

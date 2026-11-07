@@ -501,15 +501,40 @@
 
       const btn = document.getElementById('btn-submit-order');
       btn.disabled = true;
-      btn.innerHTML = `⚡ Processing & Minting License...`;
+      btn.innerHTML = '⚡ Processing & Minting License...';
 
       setTimeout(() => {
         btn.disabled = false;
-        btn.innerHTML = `🔒 COMPLETE ORDER & UNLOCK SYSTEM →`;
+        btn.innerHTML = '🔒 COMPLETE ORDER & UNLOCK SYSTEM →';
 
-        const email = document.getElementById('cust-email')?.value || 'user@neurosparkx.com';
+        const email = document.getElementById('cust-email')?.value || (window.NeuroSparkAuth && window.NeuroSparkAuth.getCurrentUser() ? window.NeuroSparkAuth.getCurrentUser().email : 'user@neurosparkx.com');
+        const firstName = document.getElementById('cust-first-name')?.value || 'Operator';
+        const lastName = document.getElementById('cust-last-name')?.value || '';
+        const fullName = (firstName + ' ' + lastName).trim();
+        const orderId = 'NSX-2026-' + Math.floor(10000 + Math.random() * 90000);
+
+        let subtotal = cart.reduce((sum, it) => sum + Number(it.price), 0);
+        let finalTotal = Math.max(0, subtotal - currentDiscount);
+
+        // Record Order in NeuroSpark Database
+        if (window.NeuroSparkDB && typeof window.NeuroSparkDB.createOrder === 'function') {
+          window.NeuroSparkDB.createOrder({
+            id: orderId,
+            customerName: fullName || 'Valued Operator',
+            customerEmail: email,
+            totalAmount: finalTotal,
+            paymentMethod: customProvider ? ('Express (' + customProvider + ')') : 'Credit Card (Stripe)',
+            items: cart.map(item => ({
+              id: item.id || 'sys-asset',
+              title: item.title,
+              price: item.price,
+              accessLink: item.accessLink || 'https://t.me/OfficialNeuroSparkX'
+            }))
+          });
+        }
+
         document.getElementById('success-email').innerText = email;
-        document.getElementById('success-order-id').innerText = `#NSX-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+        document.getElementById('success-order-id').innerText = '#' + orderId;
 
         // Clear Cart
         localStorage.removeItem('ns_cart');
@@ -521,7 +546,7 @@
 
     function closeSuccessModal() {
       document.getElementById('order-success-modal').classList.remove('active');
-      window.location.href='/shop/';
+      window.location.href='/dashboard/';
     }
 
     renderCheckoutSummary();

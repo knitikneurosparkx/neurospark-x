@@ -278,13 +278,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 11. Homepage Featured Products with Visual Mockups
+  // 11. Global Header User Avatar Synchronization
+  function syncHeaderUserAvatar() {
+    const user = (window.NeuroSparkAuth && typeof window.NeuroSparkAuth.getCurrentUser === 'function') ? window.NeuroSparkAuth.getCurrentUser() : null;
+    document.querySelectorAll('.user-avatar-pill').forEach(pill => {
+      if (user) {
+        pill.innerText = user.avatar || user.name.charAt(0).toUpperCase();
+        pill.title = `${user.name} (${user.role.toUpperCase()}) — My Constellation & Orders`;
+        if (user.role === 'admin') {
+          pill.style.border = '1px solid #FBBF24';
+          pill.style.boxShadow = '0 0 10px rgba(212, 160, 23, 0.4)';
+        } else {
+          pill.style.border = '1px solid var(--teal)';
+          pill.style.boxShadow = '0 0 10px rgba(20, 184, 166, 0.3)';
+        }
+      } else {
+        pill.innerText = '👤';
+        pill.title = 'Sign In / My Constellation';
+        pill.style.border = '1px solid rgba(255,255,255,0.2)';
+        pill.style.boxShadow = 'none';
+      }
+    });
+  }
+
+  syncHeaderUserAvatar();
+  window.addEventListener('nsx_auth_state_changed', syncHeaderUserAvatar);
+
+  // 12. Homepage Featured Products with Visual Mockups
   const homeProdsEl = document.getElementById('homepage-featured-products');
-  if (homeProdsEl && window.NeuroSparkData && window.NeuroSparkData.products) {
-    const featured = window.NeuroSparkData.products.filter(p => ['prod-1', 'prod-2', 'prod-5'].includes(p.id));
+  function renderHomeFeatured() {
+    if (!homeProdsEl) return;
+    const allProds = (window.NeuroSparkDB && typeof window.NeuroSparkDB.getProducts === 'function') ? window.NeuroSparkDB.getProducts() : (window.NeuroSparkData ? window.NeuroSparkData.products : []);
+    const featured = allProds.slice(0, 3);
+    window.addEventListener("nsx_data_updated", renderHomeFeatured);
     homeProdsEl.innerHTML = featured.map(prod => `
       <div class="product-card">
-        <div class="product-card-visual" onclick="window.location.href='product.html?id=${prod.id}'">
+        <div class="product-card-visual" onclick="window.location.href='/product/?id=${prod.id}'">
           <div class="product-ribbon ${prod.price === 0 ? 'gold' : ''}">${prod.ribbonText || prod.badge}</div>
           ${window.NeuroSparkData.getProductVisual ? window.NeuroSparkData.getProductVisual(prod.id) : ''}
           <div class="product-card-format-badge">${prod.format ? prod.format.split('+')[0].trim() : 'System Module'}</div>
@@ -294,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div>
             <div class="product-card-tag">${prod.tag}</div>
             <h3 class="product-card-title">
-              <a href="product.html?id=${prod.id}">
+              <a href="/product/?id=${prod.id}">
                 ${prod.title}
               </a>
             </h3>
@@ -309,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${prod.originalPrice ? `<span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-subtle); text-decoration: line-through;">$${prod.originalPrice}</span>` : ''}
             </div>
             <div style="display: flex; gap: 8px;">
-              <a href="product.html?id=${prod.id}" class="btn btn-glass" style="padding: 8px 14px; font-size: 0.75rem;">
+              <a href="/product/?id=${prod.id}" class="btn btn-glass" style="padding: 8px 14px; font-size: 0.75rem;">
                 VIEW SYSTEM →
               </a>
               <button class="btn btn-gold" onclick="addToCart('${prod.title}', ${prod.price})" style="padding: 8px 12px; font-size: 0.75rem;" title="Add to Cart">

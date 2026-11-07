@@ -306,7 +306,8 @@
       const grid = document.getElementById('shop-grid');
       if (!grid || !window.NeuroSparkData) return;
 
-      const prods = window.NeuroSparkData.products.filter(p => {
+      const allProds = (window.NeuroSparkDB && typeof window.NeuroSparkDB.getProducts === "function") ? window.NeuroSparkDB.getProducts() : window.NeuroSparkData.products;
+      const prods = allProds.filter(p => {
         const matchesCat = currentCategory === 'all' || p.category === currentCategory;
         const matchesSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.summary.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCat && matchesSearch;
